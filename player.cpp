@@ -3,12 +3,9 @@
 #include "Game.h"
 using namespace std;
 int player = 0;
-float eval(vector<string > board){
-  return rand();
-}
 float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
     if (depth == 0) {
-        return -eval(game.board());
+        return player==0?game.eval_function(game.board()):-1*game.eval_function(game.board());
     }
 
 
@@ -70,7 +67,7 @@ void play(Game game){
     int index = 0;
     for(int i=0;i<validMoves.size();i++){
       game.move(validMoves[i]);
-      float temp = minimax(3, game, FLT_MIN, FLT_MAX, false);
+      float temp = minimax(3, game, FLT_MAX, FLT_MIN, false);
       index = bestValue<temp?i:index;
       bestValue = max(bestValue, temp);
       game.undo();

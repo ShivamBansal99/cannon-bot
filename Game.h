@@ -14,11 +14,12 @@ public:
   vector<vector<int>> valid_moves(int color);
   vector<string> board();
   Game(int n, int m);
+  float eval_function(vector<string> board_status);
 private:
   vector<string> load_new_board();
   vector<string> load_data();
   void print_board();
-  vector<int> create_vector(int type,int xs,int ys,int x,int y);
+  vector<int> create_vector(int type,int xs,int ys,int x,int y,int num_attacks);
   vector<vector<int>> valid_moves2(vector<string> &current_board,char player,char opp_player,char townhall,char opp_townhall);
 
 };
