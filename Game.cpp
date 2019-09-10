@@ -41,6 +41,7 @@ using namespace std;
                     current_board[1][i]='W';
                     current_board[2][i]='W';
             }
+            //cout<<1<<endl;
             return current_board;
     }
     vector<string> Game::load_data(){

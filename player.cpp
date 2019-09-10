@@ -42,8 +42,8 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
 
 
 void play_move_seq(vector<int> move_sequence){
-  char select = move_sequence[0]==0?'M ':'B ';
-  cout<<'S '<<move_sequence[1]<<' '<<move_sequence[2]<<' '<< select <<' '<<move_sequence[3]<<' '<<move_sequence[4] <<endl;
+  string select = move_sequence[0]==0?"M ":"B ";
+  cout<<"S "<<move_sequence[1]<<' '<<move_sequence[2]<<' '<< select <<move_sequence[3]<<' '<<move_sequence[4] <<endl;
 }
 vector<int> move_to_array(string move){
   vector<int> moveVector;
