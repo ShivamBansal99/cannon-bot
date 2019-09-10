@@ -11,13 +11,13 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
         return -eval(game.board());
     }
 
-    vector<vector<int> > newGameMoves = game.valid_moves(player);
 
     if (isMax) {
+        vector<vector<int> > newGameMoves = game.valid_moves(player);
         float bestMove = FLT_MIN;
         for (int i = 0; i < newGameMoves.size(); i++) {
             game.move(newGameMoves[i]);
-            bestMove = max(bestMove, minimax(depth - 1, game, alpha, beta, 1-player));
+            bestMove = max(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
             game.undo();
             alpha = max(alpha, bestMove);
             if (beta <= alpha) {
@@ -26,10 +26,11 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
         }
         return bestMove;
     } else {
+      vector<vector<int> > newGameMoves = game.valid_moves(1-player);
         float bestMove = FLT_MAX;
         for (int i = 0; i < newGameMoves.size(); i++) {
             game.move(newGameMoves[i]);
-            bestMove = min(bestMove, minimax(depth - 1, game, alpha, beta, 1-player));
+            bestMove = min(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
             game.undo();
             beta = min(beta, bestMove);
             if (beta <= alpha) {
@@ -43,22 +44,25 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
 
 void play_move_seq(vector<int> move_sequence){
   string select = move_sequence[0]==0?"M ":"B ";
-  cout<<"S "<<move_sequence[1]<<' '<<move_sequence[2]<<' '<< select <<move_sequence[3]<<' '<<move_sequence[4] <<endl;
+  cout<<"S "<<move_sequence[2]<<' '<<move_sequence[1]<<' '<< select <<move_sequence[4]<<' '<<move_sequence[3] <<endl;
 }
 vector<int> move_to_array(string move){
   vector<int> moveVector;
-  moveVector.push_back(1);
-  moveVector.push_back(0);
-  moveVector.push_back(0);
-  moveVector.push_back(0);
-  moveVector.push_back(0);
+  int type=move[6]=='M'?0:1;
+  moveVector.push_back(type);
+  moveVector.push_back((int)(move[4]-'0'));
+  moveVector.push_back((int)(move[2]-'0'));
+  moveVector.push_back((int)(move[8]-'0'));
+  moveVector.push_back((int)(move[6]-'0'));
   return moveVector;
 }
 void play(Game game){
   string move;
   if(player == 1){
-    cin>>move;
-    //game.move(move_to_array(move));
+    char temp;
+    cin>>temp;
+    getline(cin,move);
+    game.move(move_to_array(move));
   }
   while(1){
     vector<vector<int> > validMoves = game.valid_moves(player);
@@ -66,15 +70,17 @@ void play(Game game){
     int index = 0;
     for(int i=0;i<validMoves.size();i++){
       game.move(validMoves[i]);
-      float temp = minimax(3, game, FLT_MIN, FLT_MAX, player);
+      float temp = minimax(3, game, FLT_MIN, FLT_MAX, false);
       index = bestValue<temp?i:index;
       bestValue = max(bestValue, temp);
       game.undo();
     }
+    game.move(validMoves[index]);
     play_move_seq(validMoves[index]);
-
-    cin>>move;
-    //game.move(move_to_array(move));
+    char temp;
+    cin>>temp;
+    getline(cin,move);
+    game.move(move_to_array(move));
   }
 }
 

@@ -6,12 +6,23 @@ using namespace std;
       Game::n=n;
       Game::m=m;
       Game::current_board = load_new_board();
+      Game::prev_board = load_new_board();
     }
     void Game::move(vector<int> mov){
-
+        for(int i=0;i<current_board.size();i++){
+          prev_board[i]=current_board[i];
+        }
+        if(mov[0]==1){
+          current_board[mov[3]][mov[4]]='-';
+        }else{
+          current_board[mov[3]][mov[4]]=current_board[mov[1]][mov[2]];
+          current_board[mov[1]][mov[2]]='-';
+        }
     }
     void Game::undo(){
-
+      for(int i=0;i<current_board.size();i++){
+        current_board[i]=prev_board[i];
+      }
     }
     vector<string> Game::board(){
       return current_board;
