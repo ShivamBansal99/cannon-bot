@@ -18,6 +18,7 @@ using namespace std;
           current_board[mov[3]][mov[4]]=current_board[mov[1]][mov[2]];
           current_board[mov[1]][mov[2]]='-';
         }
+        //print_board();
     }
     void Game::undo(){
       for(int i=0;i<current_board.size();i++){

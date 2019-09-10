@@ -43,23 +43,29 @@ void play_move_seq(vector<int> move_sequence){
   string select = move_sequence[0]==0?"M ":"B ";
   cout<<"S "<<move_sequence[2]<<' '<<move_sequence[1]<<' '<< select <<move_sequence[4]<<' '<<move_sequence[3] <<endl;
 }
-vector<int> move_to_array(string move){
+vector<int> move_to_array(){
   vector<int> moveVector;
-  int type=move[6]=='M'?0:1;
-  moveVector.push_back(type);
-  moveVector.push_back((int)(move[4]-'0'));
-  moveVector.push_back((int)(move[2]-'0'));
-  moveVector.push_back((int)(move[8]-'0'));
-  moveVector.push_back((int)(move[6]-'0'));
+  char temp;
+  int x,y;
+  cin>>temp;
+  cin>>x;
+  cin>>y;
+  moveVector.push_back(0);
+  moveVector.push_back(y);
+  moveVector.push_back(x);
+  cin>>temp;
+  int type = temp=='B'?1:0;
+  moveVector[0]=type;
+  cin>>x;
+  cin>>y;
+  moveVector.push_back(y);
+  moveVector.push_back(x);
   return moveVector;
 }
 void play(Game game){
   string move;
   if(player == 1){
-    char temp;
-    cin>>temp;
-    getline(cin,move);
-    game.move(move_to_array(move));
+    game.move(move_to_array());
   }
   while(1){
     vector<vector<int> > validMoves = game.valid_moves(player);
@@ -74,10 +80,7 @@ void play(Game game){
     }
     game.move(validMoves[index]);
     play_move_seq(validMoves[index]);
-    char temp;
-    cin>>temp;
-    getline(cin,move);
-    game.move(move_to_array(move));
+    game.move(move_to_array());
   }
 }
 
