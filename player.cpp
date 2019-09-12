@@ -7,18 +7,14 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
     if (depth == 0) {
         return player==0?game.eval_function(game.board()):-1*game.eval_function(game.board());
     }
-
-    unordered_map<int,int> num_attacks_onOpp_byCannon_black;
-  	unordered_map<int,int> num_attacks_onOpp_bySoldiers_black;
   	unordered_map<int,int> attack_space_of_cannons_black;
   	unordered_map<int,int> attack_space_of_soldiers_black;
   	vector<int> space_of_soldiers_black;
-  	bool townhall_is_under_attack_black=false;
   	vector<int> cannon_pos_black;
 
     if (isMax) {
-        vector<vector<int> > newGameMoves = game.valid_moves(player,num_attacks_onOpp_byCannon_black,num_attacks_onOpp_bySoldiers_black,
-      		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,townhall_is_under_attack_black,cannon_pos_black);
+        vector<vector<int> > newGameMoves = game.valid_moves(player,
+      		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
         float bestMove = FLT_MIN;
         for (int i = 0; i < newGameMoves.size(); i++) {
             game.move(newGameMoves[i]);
@@ -31,8 +27,8 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
         }
         return bestMove;
     } else {
-      vector<vector<int> > newGameMoves = game.valid_moves(1-player,num_attacks_onOpp_byCannon_black,num_attacks_onOpp_bySoldiers_black,
-    		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,townhall_is_under_attack_black,cannon_pos_black);
+      vector<vector<int> > newGameMoves = game.valid_moves(1-player,
+    		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
         float bestMove = FLT_MAX;
         for (int i = 0; i < newGameMoves.size(); i++) {
             game.move(newGameMoves[i]);
@@ -77,15 +73,13 @@ void play(Game game){
     game.move(move_to_array());
   }
   while(1){
-    unordered_map<int,int> num_attacks_onOpp_byCannon_black;
-    unordered_map<int,int> num_attacks_onOpp_bySoldiers_black;
     unordered_map<int,int> attack_space_of_cannons_black;
     unordered_map<int,int> attack_space_of_soldiers_black;
     vector<int> space_of_soldiers_black;
     bool townhall_is_under_attack_black=false;
     vector<int> cannon_pos_black;
-    vector<vector<int> > validMoves = game.valid_moves(player,num_attacks_onOpp_byCannon_black,num_attacks_onOpp_bySoldiers_black,
-      attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,townhall_is_under_attack_black,cannon_pos_black);
+    vector<vector<int> > validMoves = game.valid_moves(player,
+      attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
     float bestValue=FLT_MIN;
     int index = 0;
     for(int i=0;i<validMoves.size();i++){
