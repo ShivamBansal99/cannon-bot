@@ -53,7 +53,7 @@ using namespace std;
                     current_board[1][i]='W';
                     current_board[2][i]='W';
             }
-            ////cout<<1<<endl;
+            ////////cout<<1<<endl;
             return current_board;
     }
     vector<string> Game::load_data(){
@@ -77,7 +77,7 @@ using namespace std;
     }
     void Game::print_board(){
             for(int i=0;i<n;i++){
-                    //cout<<current_board[i]<<"\n";
+                    //////cout<<current_board[i]<<"\n";
             }
             return;
     }
@@ -656,7 +656,7 @@ using namespace std;
 	return possible_moves;
 }
     float Game::eval_function(vector<string> board_status,int move){
-	double value=0;
+	float value=0;
 	int num_black_soldiers=0;
 	int num_white_soldiers=0;
 	int black_y_sum=0;
@@ -680,7 +680,7 @@ using namespace std;
 	vector<int> cannon_pos_black;
 
 
-	vector<vector<int>> black_valid_positions=valid_moves(board_status,0,attack_space_of_cannons_black,attack_space_of_soldiers_black,
+	vector<vector<int>> black_valid_positions=valid_moves(0,attack_space_of_cannons_black,attack_space_of_soldiers_black,
 		space_of_soldiers_black,cannon_pos_black);
 
 
@@ -699,7 +699,7 @@ using namespace std;
 	vector<int> cannon_pos_white;
 
 
-	vector<vector<int>> white_valid_positions=valid_moves(board_status,1,attack_space_of_cannons_white,attack_space_of_soldiers_white,
+	vector<vector<int>> white_valid_positions=valid_moves(1,attack_space_of_cannons_white,attack_space_of_soldiers_white,
 		space_of_soldiers_white,cannon_pos_white);
 
 	int cann=0;
@@ -710,7 +710,54 @@ using namespace std;
 	int positiont=0;
 
 
-	cout<<"attack on each soldier black"<<endl;
+
+	////cout<<"attack on each soldier black by cannon"<<endl;
+	for(int i=0;i<space_of_soldiers_black.size();i++){
+		position=space_of_soldiers_black[i];
+		positiont=(m*n)-1-position;
+		if(attack_space_of_cannons_white.find(positiont)==attack_space_of_cannons_white.end()){
+			sold=0;
+		}
+		else{
+			sold=attack_space_of_cannons_white[positiont];
+			////cout<<positiont<<" "<<sold<<endl;
+		}
+		//attack_on_each_soldier_black.insert(make_pair(position,sold));
+		num_opp_attacked_by_whiteCannons+=sold;
+		xxa=position/m;
+		xxb=position%m;
+	}
+
+
+	////cout<<"attack on each soldier white by cannon"<<endl;
+	for(int i=0;i<space_of_soldiers_white.size();i++){
+		position=space_of_soldiers_white[i];
+		positiont=(m*n)-1-position;
+		if(attack_space_of_cannons_black.find(positiont)==attack_space_of_cannons_black.end()){
+			sold=0;
+		}
+		else{
+			sold=attack_space_of_cannons_black[positiont];
+			////cout<<positiont<<" "<<sold<<endl;
+		}
+		num_opp_attacked_by_blackCannons+=sold;
+		//attack_on_each_soldier_white.insert(make_pair(position,sold));
+		xxa=position/m;
+		xxb=position%m;
+	}
+	// //cout<<"\n";
+	// for(auto itr=attack_space_of_cannons_white.begin();itr!=attack_space_of_cannons_white.end();itr++){
+	// 	//cout<<(*itr).first<<" "<<(*itr).second<<"\n";
+	// }
+	// //cout<<endl;
+
+	// for(auto itr=attack_space_of_cannons_black.begin();itr!=attack_space_of_cannons_black.end();itr++){
+	// 	//cout<<(*itr).first<<" "<<(*itr).second<<"\n";
+	// }
+	// //cout<<endl;
+
+
+	////cout<<"attack on each soldier black"<<endl;
 	for(int i=0;i<space_of_soldiers_black.size();i++){
 		position=space_of_soldiers_black[i];
 		positiont=(m*n)-1-position;
@@ -723,11 +770,11 @@ using namespace std;
 		attack_on_each_soldier_black.insert(make_pair(position,sold));
 		xxa=position/m;
 		xxb=position%m;
-		cout<<xxa<<" "<<xxb<<" "<<sold<<endl;
+		////cout<<xxa<<" "<<xxb<<" "<<sold<<endl;
 	}
 
 
-	cout<<"attack on each soldier white"<<endl;
+	////cout<<"attack on each soldier white"<<endl;
 	for(int i=0;i<space_of_soldiers_white.size();i++){
 		position=space_of_soldiers_white[i];
 		positiont=(m*n)-1-position;
@@ -740,12 +787,12 @@ using namespace std;
 		attack_on_each_soldier_white.insert(make_pair(position,sold));
 		xxa=position/m;
 		xxb=position%m;
-		cout<<xxa<<" "<<xxb<<" "<<sold<<endl;
+		////cout<<xxa<<" "<<xxb<<" "<<sold<<endl;
 	}
 
 
 
-	cout<<"Backup on each soldier black"<<endl;
+	////cout<<"Backup on each soldier black"<<endl;
 	for(int i=0;i<space_of_soldiers_black.size();i++){
 		position=space_of_soldiers_black[i];
 		xxa=position/m;
@@ -755,21 +802,21 @@ using namespace std;
 		}
 		else{
 			sold=attack_space_of_soldiers_black[position];
-			//cout<<xxa<<" "<<xxb<<"s "<<(sold)<<endl;
+			//////cout<<xxa<<" "<<xxb<<"s "<<(sold)<<endl;
 		}
 		if(attack_space_of_cannons_black.find(position)==attack_space_of_cannons_black.end()){
 			cann=0;
 		}
 		else{
 			cann=attack_space_of_cannons_black[position];
-			//cout<<xxa<<" "<<xxb<<"c "<<(cann)<<endl;
+			//////cout<<xxa<<" "<<xxb<<"c "<<(cann)<<endl;
 		}
 		backup_on_each_soldier_black.insert(make_pair(position,cann+sold));
-		cout<<xxa<<" "<<xxb<<" "<<(cann+sold)<<endl;
+		////cout<<xxa<<" "<<xxb<<" "<<(cann+sold)<<endl;
 	}
 
 
-	cout<<"Backup on each soldier white"<<endl;
+	////cout<<"Backup on each soldier white"<<endl;
 	for(int i=0;i<space_of_soldiers_white.size();i++){
 		position=space_of_soldiers_white[i];
 		xxa=position/m;
@@ -779,19 +826,19 @@ using namespace std;
 		}
 		else{
 			sold=attack_space_of_soldiers_white[position];
-			//cout<<xxa<<" "<<xxb<<"s "<<(sold)<<endl;
+			//////cout<<xxa<<" "<<xxb<<"s "<<(sold)<<endl;
 		}
 		if(attack_space_of_cannons_white.find(position)==attack_space_of_cannons_white.end()){
 			cann=0;
 		}
 		else{
 			cann=attack_space_of_cannons_white[position];
-			//cout<<xxa<<" "<<xxb<<"c "<<(cann)<<endl;
+			//////cout<<xxa<<" "<<xxb<<"c "<<(cann)<<endl;
 		}
 		backup_on_each_soldier_white.insert(make_pair(position,cann+sold));
-		 cout<<xxa<<" "<<xxb<<" "<<(cann+sold)<<endl;
+		 ////cout<<xxa<<" "<<xxb<<" "<<(cann+sold)<<endl;
 	}
-	cout<<endl;
+	////cout<<endl;
 	int temp_value=0;
 
 	for(int i=0;i<space_of_soldiers_black.size();i++){
@@ -800,14 +847,14 @@ using namespace std;
 		xxa=position/m;
 		xxb=position%m;
 		black_y_sum+=n-1-xxa;
-		if(temp_value<0&&move==0){
+		if(temp_value<0&&move==1){
 			//temp_value*=17;
 			value_of_all_soldiers_black+=temp_value*30;
 		}
-		// cout<<xxa<<" "<<xxb<<" "<<temp_value<<endl;
-		//cout<<xxa<<" "<<xxb<<" "<<backup_on_each_soldier_black[position]<<" "<<attack_on_each_soldier_black[position]<<endl;
+		// ////cout<<xxa<<" "<<xxb<<" "<<temp_value<<endl;
+		//////cout<<xxa<<" "<<xxb<<" "<<backup_on_each_soldier_black[position]<<" "<<attack_on_each_soldier_black[position]<<endl;
 	}
-	//cout<<endl;
+	//////cout<<endl;
 
 	for(int i=0;i<space_of_soldiers_white.size();i++){
 		position=space_of_soldiers_white[i];
@@ -815,45 +862,45 @@ using namespace std;
 		xxa=position/m;
 		xxb=position%m;
 		white_y_sum+=n-1-xxa;
-		if(temp_value<0&&move==1){
+		if(temp_value<0&&move==0){
 			//temp_value*=17;
 			value_of_all_soldiers_white+=temp_value*30;
 		}
-		//cout<<xxa<<" "<<xxb<<" "<<backup_on_each_soldier_white[position]<<" "<<attack_on_each_soldier_white[position]<<endl;
+		//////cout<<xxa<<" "<<xxb<<" "<<backup_on_each_soldier_white[position]<<" "<<attack_on_each_soldier_white[position]<<endl;
 	}
 
-	for(int i=0;i<cannon_pos_black.size();i++){
-		position=cannon_pos_black[i];
-		temp_value=backup_on_each_soldier_black[position]- attack_on_each_soldier_black[position];
-		//value_of_each_player_black.push_back(temp_value);
-		xxa=position/m;
-		xxb=position%m;
-		//black_y_sum+=n-1-xxa;
-		if(temp_value<0&&move==0){
-			//temp_value=25*(temp_value);
-			value_of_all_cannons_black+=temp_value*30;
-		}
-		//value_of_all_cannons_black+=temp_value;
-		//cout<<xxa<<" "<<xxb<<" "<<temp_value<<endl;
-		//cout<<position<<" "<<temp_value<<endl;
-	}
-	//cout<<endl;
+	// for(int i=0;i<cannon_pos_black.size();i++){
+	// 	position=cannon_pos_black[i];
+	// 	temp_value=backup_on_each_soldier_black[position]- attack_on_each_soldier_black[position];
+	// 	//value_of_each_player_black.push_back(temp_value);
+	// 	xxa=position/m;
+	// 	xxb=position%m;
+	// 	//black_y_sum+=n-1-xxa;
+	// 	if(temp_value<0&&move==1){
+	// 		//temp_value=25*(temp_value);
+	// 		value_of_all_cannons_black+=temp_value*30;
+	// 	}
+	// 	//value_of_all_cannons_black+=temp_value;
+	// 	//////cout<<xxa<<" "<<xxb<<" "<<temp_value<<endl;
+	// 	//////cout<<position<<" "<<temp_value<<endl;
+	// }
+	// //////cout<<endl;
 
-	for(int i=0;i<cannon_pos_white.size();i++){
-		position=cannon_pos_white[i];
-		temp_value=backup_on_each_soldier_white[position]- attack_on_each_soldier_white[position];
-		//value_of_each_player_white.push_back(temp_value);
-		xxa=position/m;
-		xxb=position%m;
-		//white_y_sum+=xxa;
-		if(temp_value<0&&move==1){
-			// temp_value=25*(temp_value);
-			value_of_all_cannons_white+=temp_value*30;
-		}
-		// value_of_all_cannons_white+=temp_value;
-		//cout<<position<<" "<<temp_value<<endl;
-		//cout<<xxa<<" "<<xxb<<" "<<sold<<endl;
-	}
+	// for(int i=0;i<cannon_pos_white.size();i++){
+	// 	position=cannon_pos_white[i];
+	// 	temp_value=backup_on_each_soldier_white[position]- attack_on_each_soldier_white[position];
+	// 	//value_of_each_player_white.push_back(temp_value);
+	// 	xxa=position/m;
+	// 	xxb=position%m;
+	// 	//white_y_sum+=xxa;
+	// 	if(temp_value<0&&move==0){
+	// 		// temp_value=25*(temp_value);
+	// 		value_of_all_cannons_white+=temp_value*30;
+	// 	}
+	// 	// value_of_all_cannons_white+=temp_value;
+	// 	//////cout<<position<<" "<<temp_value<<endl;
+	// 	//////cout<<xxa<<" "<<xxb<<" "<<sold<<endl;
+	// }
 
 	num_black_soldiers=space_of_soldiers_black.size();
 	num_white_soldiers=space_of_soldiers_white.size();
@@ -864,95 +911,107 @@ using namespace std;
 	num_cannons_white=cannon_pos_white.size();
 	num_cannons_black=cannon_pos_black.size();
 
+	for(int i=0;i<m;i=i+2){
+		if(board_status[0][i]=='O'){
+			num_white_townhalls++;
+		}
+	}
+
+	for(int i=1;i<m;i=i+2){
+		if(board_status[n-1][i]=='#'){
+			num_black_townhalls++;
+		}
+	}
+
 
 	// if(townhall_is_under_attack_white){
 	// 	value-=20;
 	// }
-	// //cout<<value<<endl;
+	// //////cout<<value<<endl;
 	// if(townhall_is_under_attack_black){
 	// 	value+=20;
 	// }
-	// cout<<value<<endl;
+	// ////cout<<value<<endl;
 
 
-	value+=value_of_all_soldiers_black;
-	//cout<<value_of_all_soldiers_black<<" "<<value_of_all_soldiers_white<<endl;
+	//value+=value_of_all_soldiers_black;
+	//////cout<<value_of_all_soldiers_black<<" "<<value_of_all_soldiers_white<<endl;
+	//////cout<<value<<endl;
+	//value-=value_of_all_soldiers_white;
 	//cout<<value<<endl;
-	value-=value_of_all_soldiers_white;
-	cout<<value<<endl;
 	
 
 
 	// value+=value_of_all_cannons_black;
-	// //cout<<value<<endl;
+	// //////cout<<value<<endl;
 	// value-=value_of_all_cannons_white;
-	// cout<<value<<endl;
+	// ////cout<<value<<endl;
 
 	// value+=num_cannons_black;
-	// // //cout<<value<<endl;
+	// // //////cout<<value<<endl;
 	// value-=num_cannons_white;
-	// cout<<value<<endl;
+	// ////cout<<value<<endl;
 
 
-	value+=num_black_soldiers*30;
+	value+=num_black_soldiers*50;
+	//////cout<<value<<endl;
+	value-=num_white_soldiers*50;
 	//cout<<value<<endl;
-	value-=num_white_soldiers*30;
-	cout<<value<<endl;
 
 
 	if(num_black_townhalls==3){
 		value-=1000;
 	}
-	//cout<<value<<endl;
+	//////cout<<value<<endl;
 	if(num_white_townhalls==3){
 		value+=1000;
 	}
-	cout<<value<<endl;
+	//cout<<value<<endl;
 
 
 	if(num_black_townhalls==2){
 		value-=10000;
 	}
-	//cout<<5<<" "<<value<<endl;
+	//////cout<<5<<" "<<value<<endl;
 	if(num_white_townhalls==2){
 		value+=10000;
 	}
-	cout<<value<<endl;
+	//cout<<value<<endl;
 
 
 	// value+=num_blocks_attacked_by_black;
-	// //cout<<value<<endl;
+	// //////cout<<value<<endl;
 	// value-=num_blocks_attacked_by_white;
-	// cout<<value<<endl;
+	// ////cout<<value<<endl;
 
 
-	value+=num_opp_attacked_by_blackCannons*15;
+	value+=num_opp_attacked_by_blackCannons*35;
+	//////cout<<value<<endl;
+	value-=num_opp_attacked_by_whiteCannons*35;
 	//cout<<value<<endl;
-	value-=num_opp_attacked_by_whiteCannons*15;
-	cout<<value<<endl;
 	
 
 
 	// value+=num_pos_attacked_by_cannons_black*12;
-	// //cout<<value<<endl;
+	// //////cout<<value<<endl;
 	// value-=num_pos_attacked_by_cannons_white*12;
-	// cout<<value<<endl;
+	// ////cout<<value<<endl;
 
 
-	value+=black_y_sum*0.7f;
+	//value+=black_y_sum*0.7f;
+	//////cout<<value<<endl;
+	//value-=white_y_sum*0.7f;
 	//cout<<value<<endl;
-	value-=white_y_sum*0.7f;
-	cout<<value<<endl;
 
 
 	// if(is_present_on_this_or_this_black){
 	// 	value+=6;
 	// }
-	// //cout<<value<<endl;
+	// //////cout<<value<<endl;
 	// if(is_present_on_this_or_this_white){
 	// 	value-=6.0;
 	// }
-	// cout<<value<<endl;
+	// ////cout<<value<<endl;
 
 
 	return value;
@@ -960,16 +1019,16 @@ using namespace std;
 // int main(){
 //         vector<string> current_board=load_data();
 //         //current_board=load_new_board();
-//         ////cout<<"\n";
+//         ////////cout<<"\n";
 //         print_board(current_board);
-//         //cout<<"\n";
+//         //////cout<<"\n";
 //         vector<vector<int>> possible_moves=valid_moves(current_board,0);
 //         for(int i=0;i<possible_moves.size();i++){
 //                 for(int j=0;j<possible_moves[i].size();j++){
-//                         //cout<<possible_moves[i][j]<<" ";
+//                         //////cout<<possible_moves[i][j]<<" ";
 //                 }
-//                 //cout<<"\n";
+//                 //////cout<<"\n";
 //         }
-//         //cout<<possible_moves.size()<<"\n";
+//         //////cout<<possible_moves.size()<<"\n";
 //         return 0;
 // }

@@ -5,7 +5,7 @@ using namespace std;
 int player = 0;
 float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
     if (depth == 0) {
-        return player==0?game.eval_function(game.board()):-1*game.eval_function(game.board());
+        return player==0?game.eval_function(game.board(),isMax?player:1-player):((-1)*game.eval_function(game.board(),isMax?player:1-player));
     }
   	unordered_map<int,int> attack_space_of_cannons_black;
   	unordered_map<int,int> attack_space_of_soldiers_black;
@@ -76,7 +76,6 @@ void play(Game game){
     unordered_map<int,int> attack_space_of_cannons_black;
     unordered_map<int,int> attack_space_of_soldiers_black;
     vector<int> space_of_soldiers_black;
-    bool townhall_is_under_attack_black=false;
     vector<int> cannon_pos_black;
     vector<vector<int> > validMoves = game.valid_moves(player,
       attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
@@ -84,7 +83,7 @@ void play(Game game){
     int index = 0;
     for(int i=0;i<validMoves.size();i++){
       game.move(validMoves[i]);
-      float temp = minimax(8, game, FLT_MAX, FLT_MIN, false);
+      float temp = minimax(0, game, FLT_MAX, FLT_MIN, false);
       index = bestValue<temp?i:index;
       bestValue = max(bestValue, temp);
       game.undo();
