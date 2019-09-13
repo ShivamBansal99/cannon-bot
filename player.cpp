@@ -15,7 +15,7 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
     if (isMax) {
         vector<vector<int> > newGameMoves = game.valid_moves(player,
       		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
-        float bestMove = FLT_MIN;
+        float bestMove = INT_MIN;
         for (int i = 0; i < newGameMoves.size(); i++) {
             game.move(newGameMoves[i]);
             bestMove = max(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
@@ -29,7 +29,7 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
     } else {
       vector<vector<int> > newGameMoves = game.valid_moves(1-player,
     		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
-        float bestMove = FLT_MAX;
+        float bestMove = INT_MAX;
         for (int i = 0; i < newGameMoves.size(); i++) {
             game.move(newGameMoves[i]);
             bestMove = min(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
@@ -79,11 +79,13 @@ void play(Game game){
     vector<int> cannon_pos_black;
     vector<vector<int> > validMoves = game.valid_moves(player,
       attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
-    float bestValue=FLT_MIN;
+    ////////////////////////////////////////////
+    float bestValue=INT_MIN;
     int index = 0;
     for(int i=0;i<validMoves.size();i++){
       game.move(validMoves[i]);
-      float temp = minimax(0, game, FLT_MAX, FLT_MIN, false);
+      float temp = minimax(0, game, INT_MAX, INT_MIN, false);
+      //cout<<"a "<<validMoves[i][0]<<" "<<validMoves[i][1]<<" "<<validMoves[i][2]<<" "<<validMoves[i][3]<<" "<<validMoves[i][4]<<" "<<temp<<endl;
       index = bestValue<temp?i:index;
       bestValue = max(bestValue, temp);
       game.undo();
