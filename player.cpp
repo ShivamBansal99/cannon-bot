@@ -84,7 +84,7 @@ void play(Game game){
     int index = 0;
     for(int i=0;i<validMoves.size();i++){
       game.move(validMoves[i]);
-      float temp = minimax(0, game, INT_MAX, INT_MIN, false);
+      float temp = minimax(2, game, INT_MIN, INT_MAX, false);
       //cout<<"a "<<validMoves[i][0]<<" "<<validMoves[i][1]<<" "<<validMoves[i][2]<<" "<<validMoves[i][3]<<" "<<validMoves[i][4]<<" "<<temp<<endl;
       index = bestValue<temp?i:index;
       bestValue = max(bestValue, temp);
