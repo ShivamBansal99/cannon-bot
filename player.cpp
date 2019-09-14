@@ -96,9 +96,6 @@ void play(Game game){
   }
 }
 
-
-
-
 int main(){
 
   int data[4];
