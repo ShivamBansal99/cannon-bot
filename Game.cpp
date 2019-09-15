@@ -18,6 +18,7 @@ using namespace std;
           current_board[mov[3]][mov[4]]=current_board[mov[1]][mov[2]];
           current_board[mov[1]][mov[2]]='-';
         }
+        return;
         //print_board();
     }
     void Game::undo(){
@@ -53,7 +54,7 @@ using namespace std;
                     current_board[1][i]='W';
                     current_board[2][i]='W';
             }
-            ////////////cout<<1<<endl;
+            //////////////cout<<1<<endl;
             return current_board;
     }
     vector<string> Game::load_data(){
@@ -77,7 +78,7 @@ using namespace std;
     }
     void Game::print_board(){
             for(int i=0;i<n;i++){
-                    //////////cout<<current_board[i]<<"\n";
+                    ////////////cout<<current_board[i]<<"\n";
             }
             return;
     }
@@ -95,7 +96,7 @@ using namespace std;
     //1 ->> White
     vector<vector<int>> Game::valid_moves2(vector<string> &current_board,char player,char opp_player,char townhall,char opp_townhall,
 	unordered_map<int,int> &attack_space_of_cannons,unordered_map<int,int> &attack_space_of_soldiers,vector<int> &space_of_soldiers,
-	vector<int> &cannon_pos){
+	unordered_map<int,int> &cannon_pos){
 	vector<vector<int>> possible_moves;
 	vector<int> possible_move;
 	int position=0;
@@ -106,33 +107,27 @@ using namespace std;
 				///////////Cannon fires && Cannon moves
 				if(i>0&&i<(n-1)){
 					if(current_board[i-1][j]==player&&current_board[i+1][j]==player){
-						cannon_pos.push_back((i-1)*m+j);
-						cannon_pos.push_back((i+1)*m+j);
-						cannon_pos.push_back((i)*m+j);
+						cannon_pos[(i-1)*m+j]++;
+						cannon_pos[(i+1)*m+j]++;
+						cannon_pos[(i)*m+j]++;
 						if(i-2>=0&&current_board[i-2][j]=='-'){
 							possible_move=create_vector(0,i+1,j,i-2,j);
 							possible_moves.push_back(possible_move);
 							if(i-3>=0){
 								position=(i-3)*m+j;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i-3>=0&&!(current_board[i-3][j]==player||current_board[i-3][j]==townhall)){
-								possible_move=create_vector(1,i,j,i-3,j);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i-3][j]==player||current_board[i-3][j]==townhall)){
+									possible_move=create_vector(1,i,j,i-3,j);
+									possible_moves.push_back(possible_move);
+								}
 							}
 							if(i-4>=0){
 								position=(i-4)*m+j;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i-4>=0&&!(current_board[i-4][j]==player||current_board[i-4][j]==townhall)){
-								possible_move=create_vector(1,i,j,i-4,j);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i-4][j]==player||current_board[i-4][j]==townhall)){
+									possible_move=create_vector(1,i,j,i-4,j);
+									possible_moves.push_back(possible_move);
+								}
 							}
 						}
 						if(i+2<=(n-1)&&current_board[i+2][j]=='-'){
@@ -140,58 +135,46 @@ using namespace std;
 							possible_moves.push_back(possible_move);
 							if(i+3<=n-1){
 								position=(i+3)*m+j;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i+3<=n-1&&!(current_board[i+3][j]==player||current_board[i+3][j]==townhall)){
-								possible_move=create_vector(1,i,j,i+3,j);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i+3][j]==player||current_board[i+3][j]==townhall)){
+									possible_move=create_vector(1,i,j,i+3,j);
+									possible_moves.push_back(possible_move);
+								}
 							}
 							if(i+4<=n-1){
 								position=(i+4)*m+j;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i+4<=n-1&&!(current_board[i+4][j]==player||current_board[i+4][j]==townhall)){
-								possible_move=create_vector(1,i,j,i+4,j);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i+4][j]==player||current_board[i+4][j]==townhall)){
+									possible_move=create_vector(1,i,j,i+4,j);
+									possible_moves.push_back(possible_move);
+								}
 							}
 						}
 					}
 				}
 				if(j>0&&j<(m-1)){
 					if(current_board[i][j-1]==player&&current_board[i][j+1]==player){
-						cannon_pos.push_back((i*m)+j-1);
-						cannon_pos.push_back((i*m)+j+1);
-						cannon_pos.push_back((i*m)+j);
+						cannon_pos[(i)*m+j-1]++;
+						cannon_pos[(i)*m+j+1]++;
+						cannon_pos[(i)*m+j]++;
 						if(j-2>=0&&current_board[i][j-2]=='-'){
 							possible_move=create_vector(0,i,j+1,i,j-2);
 							possible_moves.push_back(possible_move);
 							if(j-3>=0){
 								position=(i*m)+j-3;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(j-3>=0&&!(current_board[i][j-3]==player||current_board[i][j-3]==townhall)){
-								possible_move=create_vector(1,i,j,i,j-3);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i][j-3]==player||current_board[i][j-3]==townhall)){
+									possible_move=create_vector(1,i,j,i,j-3);
+									possible_moves.push_back(possible_move);
+								}
 							}
 							if(j-4>=0){
 								position=(i*m)+j-4;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(j-4>=0&&!(current_board[i][j-4]==player||current_board[i][j-4]==townhall)){
-								possible_move=create_vector(1,i,j,i,j-4);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i][j-4]==player||current_board[i][j-4]==townhall)){
+									possible_move=create_vector(1,i,j,i,j-4);
+									possible_moves.push_back(possible_move);
+								}
 							}
 						}
 						if(j+2<=(m-1)&&current_board[i][j+2]=='-'){
@@ -199,58 +182,46 @@ using namespace std;
 							possible_moves.push_back(possible_move);
 							if(j+3<=m-1){
 								position=(i*m)+j+3;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(j+3<=m-1&&!(current_board[i][j+3]==player||current_board[i][j+3]==townhall)){
-								possible_move=create_vector(1,i,j,i,j+3);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i][j+3]==player||current_board[i][j+3]==townhall)){
+									possible_move=create_vector(1,i,j,i,j+3);
+									possible_moves.push_back(possible_move);
+								}
 							}
 							if(j+4<=m-1){
 								position=(i*m)+j+4;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(j+4<=m-1&&!(current_board[i][j+4]==player||current_board[i][j+4]==townhall)){
-								possible_move=create_vector(1,i,j,i,j+4);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i][j+4]==player||current_board[i][j+4]==townhall)){
+									possible_move=create_vector(1,i,j,i,j+4);
+									possible_moves.push_back(possible_move);
+								}
 							}
 						}
 					}
 				}
 				if(i>0&&j>0&&i<(n-1)&&j<(m-1)){
 					if(current_board[i-1][j+1]==player&&current_board[i+1][j-1]==player){
-						cannon_pos.push_back(((i+1)*m)+j-1);
-						cannon_pos.push_back(((i-1)*m)+j+1);
-						cannon_pos.push_back((i*m)+j);
+						cannon_pos[(i-1)*m+j+1]++;
+						cannon_pos[(i+1)*m+j-1]++;
+						cannon_pos[(i)*m+j]++;
 						if(i-2>=0&&j+2<=m-1&&current_board[i-2][j+2]=='-'){
 							possible_move=create_vector(0,i+1,j-1,i-2,j+2);
 							possible_moves.push_back(possible_move);
 							if(i-3>=0&&j+3<=m-1){
 								position=((i-3)*m)+j+3;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i-3>=0&&j+3<=m-1&&!(current_board[i-3][j+3]==player||current_board[i-3][j+3]==townhall)){
-								possible_move=create_vector(1,i,j,i-3,j+3);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i-3][j+3]==player||current_board[i-3][j+3]==townhall)){
+									possible_move=create_vector(1,i,j,i-3,j+3);
+									possible_moves.push_back(possible_move);
+								}
 							}
 							if(i-4>=0&&j+4<=m-1){
 								position=((i-4)*m)+j+4;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i-4>=0&&j+4<=m-1&&!(current_board[i-4][j+4]==player||current_board[i-4][j+4]==townhall)){
-								possible_move=create_vector(1,i,j,i-4,j+4);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i-4][j+4]==player||current_board[i-4][j+4]==townhall)){
+									possible_move=create_vector(1,i,j,i-4,j+4);
+									possible_moves.push_back(possible_move);
+								}
 							}
 						}
 						if(i+2<=(n-1)&&j-2>=0&&current_board[i+2][j-2]=='-'){
@@ -258,56 +229,44 @@ using namespace std;
 							possible_moves.push_back(possible_move);
 							if(i+3<=n-1&&j-3>=0){
 								position=((i+3)*m)+j-3;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i+3<=n-1&&j-3>=0&&!(current_board[i+3][j-3]==player||current_board[i+3][j-3]==townhall)){
-								possible_move=create_vector(1,i,j,i+3,j-3);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i+3][j-3]==player||current_board[i+3][j-3]==townhall)){
+									possible_move=create_vector(1,i,j,i+3,j-3);
+									possible_moves.push_back(possible_move);
+								}
 							}
 							if(i+4<=n-1&&j-4>=0){
 								position=((i+4)*m)+j-4;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i+4<=n-1&&j-4>=0&&!(current_board[i+4][j-4]==player||current_board[i+4][j-4]==townhall)){
-								possible_move=create_vector(1,i,j,i+4,j-4);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i+4][j-4]==player||current_board[i+4][j-4]==townhall)){
+									possible_move=create_vector(1,i,j,i+4,j-4);
+									possible_moves.push_back(possible_move);
+								}
 							}
 						}
 					}
 					if(current_board[i+1][j+1]==player&&current_board[i-1][j-1]==player){
-						cannon_pos.push_back(((i-1)*m)+j-1);
-						cannon_pos.push_back(((i+1)*m)+j+1);
-						cannon_pos.push_back((i*m)+j);
+						cannon_pos[(i-1)*m+j-1]++;
+						cannon_pos[(i+1)*m+j+1]++;
+						cannon_pos[(i)*m+j]++;
 						if(i-2>=0&&j-2>=0&&current_board[i-2][j-2]=='-'){
 							possible_move=create_vector(0,i+1,j+1,i-2,j-2);
 							possible_moves.push_back(possible_move);
 							if(i-3>=0&&j-3>=0){
 								position=((i-3)*m)+j-3;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i-3>=0&&j-3>=0&&!(current_board[i-3][j-3]==player||current_board[i-3][j-3]==townhall)){
-								possible_move=create_vector(1,i,j,i-3,j-3);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i-3][j-3]==player||current_board[i-3][j-3]==townhall)){
+									possible_move=create_vector(1,i,j,i-3,j-3);
+									possible_moves.push_back(possible_move);
+								}
 							}
 							if(i-4>=0&&j-4>=0){
 								position=((i-4)*m)+j-4;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i-4>=0&&j-4>=0&&!(current_board[i-4][j-4]==player||current_board[i-4][j-4]==townhall)){
-								possible_move=create_vector(1,i,j,i-4,j-4);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i-4][j-4]==player||current_board[i-4][j-4]==townhall)){
+									possible_move=create_vector(1,i,j,i-4,j-4);
+									possible_moves.push_back(possible_move);
+								}
 							}
 						}
 						if(i+2<=(n-1)&&j+2<=m-1&&current_board[i+2][j+2]=='-'){
@@ -315,25 +274,19 @@ using namespace std;
 							possible_moves.push_back(possible_move);
 							if(i+3<=n-1&&j+3<=m-1){
 								position=((i+3)*m)+j+3;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i+3<=n-1&&j+3<=m-1&&!(current_board[i+3][j+3]==player||current_board[i+3][j+3]==townhall)){
-								possible_move=create_vector(1,i,j,i+3,j+3);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i+3][j+3]==player||current_board[i+3][j+3]==townhall)){
+									possible_move=create_vector(1,i,j,i+3,j+3);
+									possible_moves.push_back(possible_move);
+								}
 							}
 							if(i+4<=n-1&&j+4<=m-1){
 								position=((i+4)*m)+j+4;
-								if(attack_space_of_cannons.find(position)==attack_space_of_cannons.end())
-									attack_space_of_cannons.insert(make_pair(position,1));
-								else
-									attack_space_of_cannons[position]++;
-							}
-							if(i+4<=n-1&&j+4<=m-1&&!(current_board[i+4][j+4]==player||current_board[i+4][j+4]==townhall)){
-								possible_move=create_vector(1,i,j,i+4,j+4);
-								possible_moves.push_back(possible_move);
+								attack_space_of_cannons[position]++;
+								if(!(current_board[i+4][j+4]==player||current_board[i+4][j+4]==townhall)){
+									possible_move=create_vector(1,i,j,i+4,j+4);
+									possible_moves.push_back(possible_move);
+								}
 							}
 						}
 					}
@@ -343,19 +296,13 @@ using namespace std;
 					if(j==0){
 						if(current_board[i][j+1]==opp_player){
 							position=((i+2)*m)+j;
-							if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-								attack_space_of_soldiers.insert(make_pair(position,1));
-							else
-								attack_space_of_soldiers[position]++;
+							attack_space_of_soldiers[position]++;
 							if((current_board[i+2][j]=='-'||current_board[i+2][j]==opp_player)){
 								possible_move=create_vector(0,i,j,i+2,j);
 								possible_moves.push_back(possible_move);
 							}
 							position=((i+2)*m)+j+2;
-							if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-								attack_space_of_soldiers.insert(make_pair(position,1));
-							else
-								attack_space_of_soldiers[position]++;
+							attack_space_of_soldiers[position]++;
 							if((current_board[i+2][j+2]=='-'||current_board[i+2][j+2]==opp_player)){
 								possible_move=create_vector(0,i,j,i+2,j+2);
 								possible_moves.push_back(possible_move);
@@ -366,19 +313,13 @@ using namespace std;
 						if(j==m-1){
 							if(current_board[i][j-1]==opp_player){
 								position=((i+2)*m)+j;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-								    attack_space_of_soldiers.insert(make_pair(position,1));
-							    else
-								    attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 								if((current_board[i+2][j]=='-'||current_board[i+2][j]==opp_player)){
 									possible_move=create_vector(0,i,j,i+2,j);
 									possible_moves.push_back(possible_move);
 								}
 								position=((i+2)*m)+j-2;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-								    attack_space_of_soldiers.insert(make_pair(position,1));
-							    else
-								    attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 								if((current_board[i+2][j-2]=='-'||current_board[i+2][j-2]==opp_player)){
 									possible_move=create_vector(0,i,j,i+2,j-2);
 									possible_moves.push_back(possible_move);
@@ -388,28 +329,19 @@ using namespace std;
 						else{
 							if(current_board[i][j-1]==opp_player||current_board[i][j+1]==opp_player){
 								position=((i+2)*m)+j;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-								    attack_space_of_soldiers.insert(make_pair(position,1));
-							    else
-								    attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 								if((current_board[i+2][j]=='-'||current_board[i+2][j]==opp_player)){
 									possible_move=create_vector(0,i,j,i+2,j);
 									possible_moves.push_back(possible_move);
 								}
 								position=((i+2)*m)+j-2;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-								    attack_space_of_soldiers.insert(make_pair(position,1));
-							    else
-								    attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 								if((current_board[i+2][j-2]=='-'||current_board[i+2][j-2]==opp_player)){
 									possible_move=create_vector(0,i,j,i+2,j-2);
 									possible_moves.push_back(possible_move);
 								}
 								position=((i+2)*m)+j+2;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-								    attack_space_of_soldiers.insert(make_pair(position,1));
-							    else
-								    attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 								if((current_board[i+2][j+2]=='-'||current_board[i+2][j+2]==opp_player)){
 									possible_move=create_vector(0,i,j,i+2,j+2);
 									possible_moves.push_back(possible_move);
@@ -422,19 +354,13 @@ using namespace std;
 					if(j==0){
 						if(current_board[i][j+1]==opp_player||current_board[i-1][j+1]==opp_player||current_board[i-1][j]==opp_player){
 							position=((i+2)*m)+j;
-							if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-							    attack_space_of_soldiers.insert(make_pair(position,1));
-						    else
-							    attack_space_of_soldiers[position]++;
+							attack_space_of_soldiers[position]++;
 							if((current_board[i+2][j]=='-'||current_board[i+2][j]==opp_player)){
 								possible_move=create_vector(0,i,j,i+2,j);
 								possible_moves.push_back(possible_move);
 							}
 							position=((i+2)*m)+j+2;
-							if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-							    attack_space_of_soldiers.insert(make_pair(position,1));
-						    else
-							    attack_space_of_soldiers[position]++;
+							attack_space_of_soldiers[position]++;
 							if((current_board[i+2][j+2]=='-'||current_board[i+2][j+2]==opp_player)){
 								possible_move=create_vector(0,i,j,i+2,j+2);
 								possible_moves.push_back(possible_move);
@@ -445,19 +371,13 @@ using namespace std;
 						if(j==m-1){
 							if(current_board[i][j-1]==opp_player||current_board[i-1][j-1]==opp_player||current_board[i-1][j]==opp_player){
 								position=((i+2)*m)+j;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-							        attack_space_of_soldiers.insert(make_pair(position,1));
-						        else
-							        attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 								if((current_board[i+2][j]=='-'||current_board[i+2][j]==opp_player)){
 								    possible_move=create_vector(0,i,j,i+2,j);
 								    possible_moves.push_back(possible_move);
 							    }
 							    position=((i+2)*m)+j-2;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-							        attack_space_of_soldiers.insert(make_pair(position,1));
-						        else
-							        attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 							    if((current_board[i+2][j-2]=='-'||current_board[i+2][j-2]==opp_player)){
 							    	possible_move=create_vector(0,i,j,i+2,j-2);
 							    	possible_moves.push_back(possible_move);
@@ -467,28 +387,19 @@ using namespace std;
 						else{
 							if(current_board[i][j+1]==opp_player||current_board[i][j-1]==opp_player||current_board[i-1][j]==opp_player||current_board[i-1][j+1]==opp_player||current_board[i-1][j-1]==opp_player){
 								position=((i+2)*m)+j;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-							        attack_space_of_soldiers.insert(make_pair(position,1));
-						        else
-							        attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 								if((current_board[i+2][j]=='-'||current_board[i+2][j]==opp_player)){
 								    possible_move=create_vector(0,i,j,i+2,j);
 								    possible_moves.push_back(possible_move);
 							    }
 							    position=((i+2)*m)+j-2;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-							        attack_space_of_soldiers.insert(make_pair(position,1));
-						        else
-							        attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 							    if((current_board[i+2][j-2]=='-'||current_board[i+2][j-2]==opp_player)){
 							    	possible_move=create_vector(0,i,j,i+2,j-2);
 							    	possible_moves.push_back(possible_move);
 							    }
 							    position=((i+2)*m)+j+2;
-							    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-							        attack_space_of_soldiers.insert(make_pair(position,1));
-						        else
-							        attack_space_of_soldiers[position]++;
+							    attack_space_of_soldiers[position]++;
 							    if((current_board[i+2][j+2]=='-'||current_board[i+2][j+2]==opp_player)){
 							    	possible_move=create_vector(0,i,j,i+2,j+2);
 							    	possible_moves.push_back(possible_move);
@@ -500,10 +411,7 @@ using namespace std;
 				//Sideways moves
 				if(j==0){
 					position=(i*m)+j+1;
-				    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				        attack_space_of_soldiers.insert(make_pair(position,1));
-			        else
-				        attack_space_of_soldiers[position]++;
+				    attack_space_of_soldiers[position]++;
 					if(current_board[i][j+1]==opp_player||current_board[i][j+1]==opp_townhall){
 						possible_move=create_vector(0,i,j,i,j+1);
 						possible_moves.push_back(possible_move);
@@ -512,10 +420,7 @@ using namespace std;
 				else{
 					if(j==m-1){
 						position=(i*m)+j-1;
-				        if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				            attack_space_of_soldiers.insert(make_pair(position,1));
-			            else
-				           attack_space_of_soldiers[position]++;
+				        attack_space_of_soldiers[position]++;
 						if(current_board[i][j-1]==opp_player||current_board[i][j-1]==opp_townhall){
 							possible_move=create_vector(0,i,j,i,j-1);
 							possible_moves.push_back(possible_move);
@@ -523,19 +428,13 @@ using namespace std;
 					}
 					else{
 						position=(i*m)+j-1;
-					    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				            attack_space_of_soldiers.insert(make_pair(position,1));
-				        else
-	           	            attack_space_of_soldiers[position]++;
+					    attack_space_of_soldiers[position]++;
 						if(current_board[i][j-1]==opp_player||current_board[i][j-1]==opp_townhall){
 							possible_move=create_vector(0,i,j,i,j-1);
 							possible_moves.push_back(possible_move);
 						}
 						position=(i*m)+j+1;
-					    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				            attack_space_of_soldiers.insert(make_pair(position,1));
-				        else
-	           	            attack_space_of_soldiers[position]++;
+					    attack_space_of_soldiers[position]++;
 						if(current_board[i][j+1]==opp_player||current_board[i][j+1]==opp_townhall){
 							possible_move=create_vector(0,i,j,i,j+1);
 							possible_moves.push_back(possible_move);
@@ -546,19 +445,13 @@ using namespace std;
 				if(i>0){
 					if(j==0){
 						position=((i-1)*m)+j+1;
-					    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				            attack_space_of_soldiers.insert(make_pair(position,1));
-				        else
-	           	            attack_space_of_soldiers[position]++;
+					    attack_space_of_soldiers[position]++;
 						if(current_board[i-1][j+1]==opp_player||current_board[i-1][j+1]==opp_townhall||current_board[i-1][j+1]=='-'){
 							possible_move=create_vector(0,i,j,i-1,j+1);
 							possible_moves.push_back(possible_move);
 						}
 						position=((i-1)*m)+j;
-					    if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				            attack_space_of_soldiers.insert(make_pair(position,1));
-				        else
-	           	            attack_space_of_soldiers[position]++;
+					    attack_space_of_soldiers[position]++;
 						if(current_board[i-1][j]==opp_player||current_board[i-1][j]==opp_townhall||current_board[i-1][j]=='-'){
 							possible_move=create_vector(0,i,j,i-1,j);
 							possible_moves.push_back(possible_move);
@@ -567,19 +460,13 @@ using namespace std;
 					else{
 						if(j==m-1){
 							position=((i-1)*m)+j-1;
-					        if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				                attack_space_of_soldiers.insert(make_pair(position,1));
-				            else
-	           	                attack_space_of_soldiers[position]++;
+					        attack_space_of_soldiers[position]++;
 							if(current_board[i-1][j-1]==opp_player||current_board[i-1][j-1]==opp_townhall||current_board[i-1][j-1]=='-'){
 								possible_move=create_vector(0,i,j,i-1,j-1);
 								possible_moves.push_back(possible_move);
 							}
 							position=((i-1)*m)+j;
-					        if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				                attack_space_of_soldiers.insert(make_pair(position,1));
-				            else
-	           	                attack_space_of_soldiers[position]++;
+					        attack_space_of_soldiers[position]++;
 							if(current_board[i-1][j]==opp_player||current_board[i-1][j]==opp_townhall||current_board[i-1][j]=='-'){
 								possible_move=create_vector(0,i,j,i-1,j);
 								possible_moves.push_back(possible_move);
@@ -587,28 +474,19 @@ using namespace std;
 						}
 						else{
 							position=((i-1)*m)+j-1;
-					        if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				                attack_space_of_soldiers.insert(make_pair(position,1));
-				            else
-	           	                attack_space_of_soldiers[position]++;
+					        attack_space_of_soldiers[position]++;
 							if(current_board[i-1][j-1]==opp_player||current_board[i-1][j-1]==opp_townhall||current_board[i-1][j-1]=='-'){
 								possible_move=create_vector(0,i,j,i-1,j-1);
 								possible_moves.push_back(possible_move);
 							}
 							position=((i-1)*m)+j+1;
-					        if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				                attack_space_of_soldiers.insert(make_pair(position,1));
-				            else
-	           	                attack_space_of_soldiers[position]++;
+					        attack_space_of_soldiers[position]++;
 							if(current_board[i-1][j+1]==opp_player||current_board[i-1][j+1]==opp_townhall||current_board[i-1][j+1]=='-'){
 								possible_move=create_vector(0,i,j,i-1,j+1);
 								possible_moves.push_back(possible_move);
 							}
 							position=((i-1)*m)+j;
-					        if(attack_space_of_soldiers.find(position)==attack_space_of_soldiers.end())
-				                attack_space_of_soldiers.insert(make_pair(position,1));
-				            else
-	           	                attack_space_of_soldiers[position]++;
+					        attack_space_of_soldiers[position]++;
 							if(current_board[i-1][j]==opp_player||current_board[i-1][j]==opp_townhall||current_board[i-1][j]=='-'){
 								possible_move=create_vector(0,i,j,i-1,j);
 								possible_moves.push_back(possible_move);
@@ -622,7 +500,7 @@ using namespace std;
 	return possible_moves;
 }
     vector<vector<int>> Game::valid_moves(int color,unordered_map<int,int> &attack_space_of_cannons,
-	unordered_map<int,int> &attack_space_of_soldiers,vector<int> &space_of_soldiers,vector<int> &cannon_pos){
+	unordered_map<int,int> &attack_space_of_soldiers,vector<int> &space_of_soldiers,unordered_map<int,int> &cannon_pos){
 	vector<vector<int>> possible_moves;
 	char player;char opp_player;char townhall;char opp_townhall;
 	if(color==0){
@@ -631,26 +509,42 @@ using namespace std;
 	else{
 		player='W';opp_player='B';townhall='O';opp_townhall='#';
 	}
-	if(color==0){
-		possible_moves=valid_moves2(current_board,player,opp_player,townhall,opp_townhall,
-			attack_space_of_cannons,attack_space_of_soldiers,space_of_soldiers,cannon_pos);
-	}
-	else{
-		vector<string> current_board_t;
-		for(int i=0;i<n;i++){
-			string temp="";
-			for(int j=0;j<m;j++){
-				temp+=current_board[n-1-i][m-1-j];
-			}
-			current_board_t.push_back(temp);
+	int num_white_townhalls=0;
+	int num_black_townhalls=0;
+	//////////////////////////////////////////////////////////////////////////////////
+	for(int i=0;i<m;i=i+2){
+		if(current_board[0][i]=='O'){
+			num_white_townhalls++;
 		}
-		possible_moves=valid_moves2(current_board_t,player,opp_player,townhall,opp_townhall,
-			attack_space_of_cannons,attack_space_of_soldiers,space_of_soldiers,cannon_pos);
-		for(int i=0;i<possible_moves.size();i++){
-			possible_moves[i][1]=n-1-possible_moves[i][1];
-			possible_moves[i][3]=n-1-possible_moves[i][3];
-			possible_moves[i][2]=m-1-possible_moves[i][2];
-			possible_moves[i][4]=m-1-possible_moves[i][4];
+	}
+	for(int i=1;i<m;i=i+2){
+		if(current_board[n-1][i]=='#'){
+			num_black_townhalls++;
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////////////
+	if(num_black_townhalls>2&&num_white_townhalls>2){
+		if(color==0){
+			possible_moves=valid_moves2(current_board,player,opp_player,townhall,opp_townhall,
+				attack_space_of_cannons,attack_space_of_soldiers,space_of_soldiers,cannon_pos);
+		}
+		else{
+			vector<string> current_board_t;
+			for(int i=0;i<n;i++){
+				string temp="";
+				for(int j=0;j<m;j++){
+					temp+=current_board[n-1-i][m-1-j];
+				}
+				current_board_t.push_back(temp);
+			}
+			possible_moves=valid_moves2(current_board_t,player,opp_player,townhall,opp_townhall,
+				attack_space_of_cannons,attack_space_of_soldiers,space_of_soldiers,cannon_pos);
+			for(int i=0;i<possible_moves.size();i++){
+				possible_moves[i][1]=n-1-possible_moves[i][1];
+				possible_moves[i][3]=n-1-possible_moves[i][3];
+				possible_moves[i][2]=m-1-possible_moves[i][2];
+				possible_moves[i][4]=m-1-possible_moves[i][4];
+			}
 		}
 	}
 	return possible_moves;
@@ -677,7 +571,7 @@ using namespace std;
 	int num_opp_attacked_by_blackCannons=0;
 	int num_pos_attacked_by_cannons_black=0;
 	int num_cannons_black=0;
-	vector<int> cannon_pos_black;
+	unordered_map<int,int> cannon_pos_black;
 
 
 	vector<vector<int>> black_valid_positions=valid_moves(0,attack_space_of_cannons_black,attack_space_of_soldiers_black,
@@ -689,14 +583,14 @@ using namespace std;
 	vector<int> space_of_soldiers_white;
 	unordered_map<int,int> backup_on_each_soldier_white;
 	unordered_map<int,int> attack_on_each_soldier_white;
-	int num_blocks_attacked_by_white=0;
 	int num_attack_on_white_townhall=0;
+	int num_blocks_attacked_by_white=0;
 	int value_of_all_soldiers_white=0;
 	int value_of_all_cannons_white=0;
 	int num_opp_attacked_by_whiteCannons=0;
 	int num_pos_attacked_by_cannons_white=0;
 	int num_cannons_white=0;
-	vector<int> cannon_pos_white;
+	unordered_map<int,int> cannon_pos_white;
 
 
 	vector<vector<int>> white_valid_positions=valid_moves(1,attack_space_of_cannons_white,attack_space_of_soldiers_white,
@@ -806,7 +700,7 @@ using namespace std;
 		xxb=position%m;
 		black_y_sum+=n-1-xxa;
 		if(temp_value<0&&move==1){
-			value_of_all_soldiers_black+=temp_value*30;
+			value_of_all_soldiers_black+=temp_value*55;
 		}
 	}
 
@@ -817,38 +711,42 @@ using namespace std;
 		xxb=position%m;
 		white_y_sum+=n-1-xxa;
 		if(temp_value<0&&move==0){
-			value_of_all_soldiers_white+=temp_value*30;
+			value_of_all_soldiers_white+=temp_value*55;
 		}
 	}
 
-	for(int i=0;i<cannon_pos_black.size();i++){
-		position=cannon_pos_black[i];
-		temp_value=backup_on_each_soldier_black[position]- attack_on_each_soldier_black[position];
-		xxa=position/m;
-		xxb=position%m;
-		if(temp_value<0&&move==1){
-			value_of_all_cannons_black+=temp_value*30;
-		}
-		else{
-			if(attack_on_each_soldier_black[position]>0){
-				value_of_all_cannons_black-=15;
-			}
-		}
-	}
+	// for(int i=0;i<cannon_pos_black.size();i++){
+	// 	position=cannon_pos_black[i];
+	// 	temp_value=backup_on_each_soldier_black[position]- attack_on_each_soldier_black[position];
+	// 	xxa=position/m;
+	// 	xxb=position%m;
+	// 	if(temp_value<0&&move==1){
+	// 		value_of_all_cannons_black+=temp_value*30;
+	// 	}
+	// 	else{
+	// 		if(attack_on_each_soldier_black[position]>0&&move==1){
+	// 			value_of_all_cannons_black-=15;
+	// 		}
+	// 	}
+	// }
 
-	for(int i=0;i<cannon_pos_white.size();i++){
-		position=cannon_pos_white[i];
-		temp_value=backup_on_each_soldier_white[position]- attack_on_each_soldier_white[position];
-		xxa=position/m;
-		xxb=position%m;
-		if(temp_value<0&&move==0){
-			value_of_all_cannons_white+=temp_value*30;
-		}
-		else{
-			if(attack_on_each_soldier_white[position]>0){
-				value_of_all_cannons_white-=15;
-			}
-		}
+	// for(int i=0;i<cannon_pos_white.size();i++){
+	// 	position=cannon_pos_white[i];
+	// 	temp_value=backup_on_each_soldier_white[position]- attack_on_each_soldier_white[position];
+	// 	xxa=position/m;
+	// 	xxb=position%m;
+	// 	if(temp_value<0&&move==0){
+	// 		value_of_all_cannons_white+=temp_value*30;
+	// 	}
+	// 	else{
+	// 		if(attack_on_each_soldier_white[position]>0&&move==0){
+	// 			value_of_all_cannons_white-=15;
+	// 		}
+	// 	}
+	// }
+	for(auto itr=cannon_pos_black.begin();itr!=cannon_pos_black.end();itr++){
+		position=(*itr).first;
+		
 	}
 
 	num_black_soldiers=space_of_soldiers_black.size();
@@ -894,10 +792,16 @@ using namespace std;
 	//cout<<value<<endl;
 
 
-	value-=num_attack_on_black_townhall*25;
-	////cout<<value<<endl;
-	value+=num_attack_on_white_townhall*25;
-	//cout<<value<<endl;
+	// value-=num_attack_on_black_townhall*20;
+	// ////cout<<value<<endl;
+	// value+=num_attack_on_white_townhall*20;
+	// //cout<<value<<endl;
+	if(num_attack_on_black_townhall>0){
+		value-=30;
+	}
+	else{
+		value+=30;
+	}
 	
 
 
@@ -917,13 +821,12 @@ using namespace std;
 	value-=num_white_soldiers*50;
 	//cout<<value<<endl;
 
-
 	if(num_black_townhalls==3){
-		value-=1000;
+		value-=60;
 	}
 	////cout<<value<<endl;
 	if(num_white_townhalls==3){
-		value+=1000;
+		value+=60;
 	}
 	//cout<<value<<endl;
 
@@ -944,9 +847,9 @@ using namespace std;
 	////cout<<value<<endl;
 
 
-	value+=num_opp_attacked_by_blackCannons*35;
+	value+=num_opp_attacked_by_blackCannons*42;
 	////////cout<<value<<endl;
-	value-=num_opp_attacked_by_whiteCannons*35;
+	value-=num_opp_attacked_by_whiteCannons*42;
 	//cout<<value<<endl;
 	
 
@@ -968,16 +871,16 @@ using namespace std;
 // int main(){
 //         vector<string> current_board=load_data();
 //         //current_board=load_new_board();
-//         ////////////cout<<"\n";
+//         //////////////cout<<"\n";
 //         print_board(current_board);
-//         //////////cout<<"\n";
+//         ////////////cout<<"\n";
 //         vector<vector<int>> possible_moves=valid_moves(current_board,0);
 //         for(int i=0;i<possible_moves.size();i++){
 //                 for(int j=0;j<possible_moves[i].size();j++){
-//                         //////////cout<<possible_moves[i][j]<<" ";
+//                         ////////////cout<<possible_moves[i][j]<<" ";
 //                 }
-//                 //////////cout<<"\n";
+//                 ////////////cout<<"\n";
 //         }
-//         //////////cout<<possible_moves.size()<<"\n";
+//         ////////////cout<<possible_moves.size()<<"\n";
 //         return 0;
 // }
