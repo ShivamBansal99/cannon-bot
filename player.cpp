@@ -80,17 +80,25 @@ int count_soldiers(vector<string> boards){
 }
 void play(Game game){
   string move;
-  int depp=2;
+  int depp=0;
+  int movess=0;
   int initial_count=count_soldiers(game.current_board);
   int num_soldiers=0;
   if(player == 1){
     game.move(move_to_array());
+    movess++;
   }
   while(1){
     num_soldiers=count_soldiers(game.current_board);
-    if(num_soldiers==(initial_count/2)){
+    if(num_soldiers<=(initial_count/1.8)){
       depp=depp+1;
       initial_count=num_soldiers;
+    }
+    if(movess==2||movess==3){
+      depp=1;
+    }
+    if(movess==4||movess==5){
+      depp=2;
     }
     unordered_map<int,int> attack_space_of_cannons_black;
     unordered_map<int,int> attack_space_of_soldiers_black;
@@ -103,15 +111,17 @@ void play(Game game){
     int index = 0;
     for(int i=0;i<validMoves.size();i++){
       game.move(validMoves[i]);
-      float temp = minimax(depp, game, INT_MIN, INT_MAX, false);
+      float temp = minimax(0, game, INT_MIN, INT_MAX, false);
       //cout<<"a "<<validMoves[i][0]<<" "<<validMoves[i][1]<<" "<<validMoves[i][2]<<" "<<validMoves[i][3]<<" "<<validMoves[i][4]<<" "<<temp<<endl;
       index = bestValue<temp?i:index;
       bestValue = max(bestValue, temp);
       game.undo();
     }
     game.move(validMoves[index]);
+    movess++;
     play_move_seq(validMoves[index]);
     game.move(move_to_array());
+    movess++;
   }
 }
 
