@@ -11,11 +11,12 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
   	unordered_map<int,int> attack_space_of_soldiers_black;
   	vector<int> space_of_soldiers_black;
   	unordered_map<int,int> cannon_pos_black;
-
+    float bestMove ;
     if (isMax) {
         vector<vector<int> > newGameMoves = game.valid_moves(player,
       		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
-        float bestMove = INT_MIN;
+        bestMove = INT_MIN;
+        if(newGameMoves.size()==0) return player==0?game.eval_function(game.board(),isMax?player:1-player):((-1)*game.eval_function(game.board(),isMax?player:1-player));
         for (int i = 0; i < newGameMoves.size(); i++) {
             game.move(newGameMoves[i]);
             bestMove = max(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
@@ -29,7 +30,8 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
     } else {
       vector<vector<int> > newGameMoves = game.valid_moves(1-player,
     		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
-        float bestMove = INT_MAX;
+        bestMove = INT_MAX;
+        if(newGameMoves.size()==0) return player==0?game.eval_function(game.board(),isMax?player:1-player):((-1)*game.eval_function(game.board(),isMax?player:1-player));
         for (int i = 0; i < newGameMoves.size(); i++) {
             game.move(newGameMoves[i]);
             bestMove = min(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
@@ -111,7 +113,7 @@ void play(Game game){
     int index = 0;
     for(int i=0;i<validMoves.size();i++){
       game.move(validMoves[i]);
-      float temp = minimax(0, game, INT_MIN, INT_MAX, false);
+      float temp = minimax(depp, game, INT_MIN, INT_MAX, false);
       //cout<<"a "<<validMoves[i][0]<<" "<<validMoves[i][1]<<" "<<validMoves[i][2]<<" "<<validMoves[i][3]<<" "<<validMoves[i][4]<<" "<<temp<<endl;
       index = bestValue<temp?i:index;
       bestValue = max(bestValue, temp);

@@ -858,9 +858,9 @@ using namespace std;
 	////cout<<value<<endl;
 
 
-	value+=num_opp_attacked_by_blackCannons*24;
+	value+=num_opp_attacked_by_blackCannons*22;
 	////////cout<<value<<endl;
-	value-=num_opp_attacked_by_whiteCannons*24;
+	value-=num_opp_attacked_by_whiteCannons*22;
 	//cout<<value<<endl;
 	
 
