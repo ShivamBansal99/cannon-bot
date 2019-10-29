@@ -5,25 +5,42 @@
 using namespace std;
 class Game {
 public:
-  vector<string > current_board;
-  vector<string > prev_board;
-  int m;
-  int n;
-  void move(vector<int> mov);
-  void undo();
-  vector<vector<int>> valid_moves(int color,unordered_map<int,int> &attack_space_of_cannons,
-  unordered_map<int,int> &attack_space_of_soldiers,vector<int> &space_of_soldiers,unordered_map<int,int> &cannon_pos);
+  char move(int mov);
+  void undo(int mov,char prev_player);
   vector<string> board();
   Game(int n, int m);
-  float eval_function(vector<string> board_status,int move);
+  float eval_function(int move);
+  unordered_set<int> possible_moves_white;
+  unordered_set<int> possible_moves_black;
+  unordered_set<int> space_of_soldiers_white;
+  unordered_set<int> space_of_soldiers_black;
+  vector<vector<int>> attack_space_of_cannons_white;
+  vector<vector<int>> attack_space_of_cannons_black;
+  vector<vector<int>> attack_space_of_soldiers_white;
+  vector<vector<int>> attack_space_of_soldiers_black;
+  unordered_map<int,int> cannon_pos_white;
+  unordered_map<int,int> cannon_pos_black;
+  vector<string> the_board;
+  bool check_ne(int x1,int y1,char player,vector<string> &current_board,bool opp);
+  int encode_move(int type,int xs,int ys,int x,int y);
+  vector<int> decode_move(int mov);
+  void attack_move1(bool del,int color1,int color2,int xs,int ys,int x,int y);
+  void attack_move2(bool del,int color1,int color2,int xs,int ys,int x,int y);
+  void insert_move(int color1,int color2,int type,int xs,int ys,int x,int y);
+  void delete_move(int color1,int color2,int type,int xs,int ys,int x,int y);
+  void add_retreat_moves(int color1,int color2,int x1,int y1,char player,vector<string> &current_board);
+  void delete_retreat_moves(int color1,int color2,int x1,int y1,char player,vector<string> &current_board);
+  void letsdel(int init_pos,char player,bool del);
+  int m;
+  int n;
+  unordered_set<int> validMoves(int player);
+  int  encode_vector_move(vector<int> move);
 private:
-  vector<string> load_new_board();
-  vector<string> load_data();
+  void load_new_board();
+  void load_data();
   void print_board();
+  void print_moves();
   vector<int> create_vector(int type,int xs,int ys,int x,int y);
-  vector<vector<int>> valid_moves2(vector<string> &current_board,char player,char opp_player,char townhall,char opp_townhall,
-  unordered_map<int,int> &attack_space_of_cannons,unordered_map<int,int> &attack_space_of_soldiers,vector<int> &space_of_soldiers,
-  unordered_map<int,int> &cannon_pos);
 
 };
 #endif

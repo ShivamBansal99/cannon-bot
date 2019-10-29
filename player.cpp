@@ -3,24 +3,19 @@
 #include "Game.h"
 using namespace std;
 int player = 0;
-float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
+float minimax(int depth,Game &game,float alpha,float beta,bool isMax) {
     if (depth == 0) {
-        return player==0?game.eval_function(game.board(),isMax?player:1-player):((-1)*game.eval_function(game.board(),isMax?player:1-player));
+        return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
     }
-  	unordered_map<int,int> attack_space_of_cannons_black;
-  	unordered_map<int,int> attack_space_of_soldiers_black;
-  	vector<int> space_of_soldiers_black;
-  	unordered_map<int,int> cannon_pos_black;
     float bestMove ;
     if (isMax) {
-        vector<vector<int> > newGameMoves = game.valid_moves(player,
-      		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
+        unordered_set<int> newGameMoves = game.validMoves(player);
         bestMove = INT_MIN;
-        if(newGameMoves.size()==0) return player==0?game.eval_function(game.board(),isMax?player:1-player):((-1)*game.eval_function(game.board(),isMax?player:1-player));
-        for (int i = 0; i < newGameMoves.size(); i++) {
-            game.move(newGameMoves[i]);
+        if(newGameMoves.size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
+        for (auto i = newGameMoves.begin(); i != newGameMoves.end(); i++) {
+            char prev_player=game.move(*i);
             bestMove = max(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
-            game.undo();
+            game.undo(*i,prev_player);
             alpha = max(alpha, bestMove);
             if (beta <= alpha) {
                 return bestMove;
@@ -28,14 +23,13 @@ float minimax(int depth,Game game,float alpha,float beta,bool isMax) {
         }
         return bestMove;
     } else {
-      vector<vector<int> > newGameMoves = game.valid_moves(1-player,
-    		attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
+      unordered_set<int> newGameMoves = game.validMoves(1-player);
         bestMove = INT_MAX;
-        if(newGameMoves.size()==0) return player==0?game.eval_function(game.board(),isMax?player:1-player):((-1)*game.eval_function(game.board(),isMax?player:1-player));
-        for (int i = 0; i < newGameMoves.size(); i++) {
-            game.move(newGameMoves[i]);
+        if(newGameMoves.size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
+        for (auto i = newGameMoves.begin(); i != newGameMoves.end(); i++) {
+            char prev_player=game.move(*i);
             bestMove = min(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
-            game.undo();
+            game.undo(*i,prev_player);
             beta = min(beta, bestMove);
             if (beta <= alpha) {
                 return bestMove;
@@ -80,18 +74,18 @@ int count_soldiers(vector<string> boards){
   }
   return count;
 }
-void play(Game game){
+void play(Game &game){
   string move;
   int depp=0;
   int movess=0;
-  int initial_count=count_soldiers(game.current_board);
+  int initial_count=count_soldiers(game.the_board);
   int num_soldiers=0;
   if(player == 1){
-    game.move(move_to_array());
+    char prev_player=game.move(game.encode_vector_move(move_to_array()));
     movess++;
   }
   while(1){
-    num_soldiers=count_soldiers(game.current_board);
+    num_soldiers=count_soldiers(game.the_board);
     if(num_soldiers<=(initial_count/1.8)){
       depp=depp+1;
       initial_count=num_soldiers;
@@ -102,27 +96,22 @@ void play(Game game){
     if(movess==4||movess==5){
       depp=2;
     }
-    unordered_map<int,int> attack_space_of_cannons_black;
-    unordered_map<int,int> attack_space_of_soldiers_black;
-    vector<int> space_of_soldiers_black;
-    unordered_map<int,int> cannon_pos_black;
-    vector<vector<int> > validMoves = game.valid_moves(player,
-      attack_space_of_cannons_black,attack_space_of_soldiers_black,space_of_soldiers_black,cannon_pos_black);
+    unordered_set<int> validMoves = game.validMoves(player);
     ////////////////////////////////////////////
     float bestValue=INT_MIN;
-    int index = 0;
-    for(int i=0;i<validMoves.size();i++){
-      game.move(validMoves[i]);
+    int best_move = 0;
+    for(auto i = validMoves.begin();i!=validMoves.end();i++){
+      char prev_player=game.move(*i);
       float temp = minimax(depp, game, INT_MIN, INT_MAX, false);
       //cout<<"a "<<validMoves[i][0]<<" "<<validMoves[i][1]<<" "<<validMoves[i][2]<<" "<<validMoves[i][3]<<" "<<validMoves[i][4]<<" "<<temp<<endl;
-      index = bestValue<temp?i:index;
+      best_move = bestValue<temp?*i:best_move;
       bestValue = max(bestValue, temp);
-      game.undo();
+      game.undo(*i,prev_player);
     }
-    game.move(validMoves[index]);
+    char prev_player=game.move(best_move);
     movess++;
-    play_move_seq(validMoves[index]);
-    game.move(move_to_array());
+    play_move_seq(game.decode_move(best_move));
+    game.move(game.encode_vector_move(move_to_array()));
     movess++;
   }
 }
