@@ -3,7 +3,8 @@
 #include "Game.h"
 using namespace std;
 int player = 0;
-float minimax(int depth,Game &game,float alpha,float beta,bool isMax) {
+Game game = Game(8,8);
+float minimax(int depth,float alpha,float beta,bool isMax) {
     if (depth == 0) {
         return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
     }
@@ -14,7 +15,7 @@ float minimax(int depth,Game &game,float alpha,float beta,bool isMax) {
         if(newGameMoves.size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
         for (auto i = newGameMoves.begin(); i != newGameMoves.end(); i++) {
             game.move(*i);
-            bestMove = max(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
+            bestMove = max(bestMove, minimax(depth - 1, alpha, beta, !isMax));
             game.undo(*i);
             alpha = max(alpha, bestMove);
             if (beta <= alpha) {
@@ -28,7 +29,7 @@ float minimax(int depth,Game &game,float alpha,float beta,bool isMax) {
         if(newGameMoves.size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
         for (auto i = newGameMoves.begin(); i != newGameMoves.end(); i++) {
             game.move(*i);
-            bestMove = min(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
+            bestMove = min(bestMove, minimax(depth - 1, alpha, beta, !isMax));
             game.undo(*i);
             beta = min(beta, bestMove);
             if (beta <= alpha) {
@@ -38,7 +39,12 @@ float minimax(int depth,Game &game,float alpha,float beta,bool isMax) {
         return bestMove;
     }
 }
-
+void print_board(){
+  for(int i=0;i<game.the_board.size();i++){
+    cerr<<game.the_board[i]<<endl;
+  }
+  return;
+}
 
 void play_move_seq(vector<int> move_sequence){
   string select = move_sequence[0]==0?"M ":"B ";
@@ -74,7 +80,7 @@ int count_soldiers(vector<string> boards){
   }
   return count;
 }
-void play(Game &game){
+void play(){
   string move;
   int depp=0;
   int movess=0;
@@ -100,18 +106,41 @@ void play(Game &game){
     ////////////////////////////////////////////
     float bestValue=INT_MIN;
     int best_move = 0;
+    // int ppp=game.possible_moves_white.size();
+    // int qqq=game.possible_moves_black.size();
+    //cerr<<endl<<ppp<<" "<<qqq<<endl;
     for(auto i = validMoves.begin();i!=validMoves.end();i++){
+      
+      
+
       game.move(*i);
-      float temp = minimax(depp, game, INT_MIN, INT_MAX, false);
+      float temp = minimax(4,  INT_MIN, INT_MAX, false);
       //cout<<"a "<<validMoves[i][0]<<" "<<validMoves[i][1]<<" "<<validMoves[i][2]<<" "<<validMoves[i][3]<<" "<<validMoves[i][4]<<" "<<temp<<endl;
       best_move = bestValue<temp?*i:best_move;
       bestValue = max(bestValue, temp);
       game.undo(*i);
+    //   if(ppp!=game.possible_moves_white.size()||qqq!=game.possible_moves_black.size()){
+    //     cerr<<"ff"<<" "<<ppp<<"aa "<<qqq<<endl;
+    //    vector<int> dde=game.decode_move(*i);
+    //   cerr<<endl<<dde[0]<<" "<<dde[1]<<" "<<dde[2]<<" "<<dde[3]<<" "<<dde[4]<<endl;
+    //   game.print_board();
+    //   game.print_moves();
+    //   cerr<<"Please save me!!!"<<endl;
+    //   break;
+    // }
     }
     game.move(best_move);
     movess++;
     play_move_seq(game.decode_move(best_move));
+    // print_board();
+    // cerr<<endl;
+    // game.print_moves();
+    // cerr<<endl;
     game.move(game.encode_vector_move(move_to_array()));
+    // print_board();
+    // cerr<<endl;
+    // game.print_moves();
+    // cerr<<endl;
     movess++;
   }
 }
@@ -126,7 +155,8 @@ int main(){
   int n = data[1];
   int m = data[2];
   int time_left = data[3];
-  Game game = Game(n,m);
-  play(game);
+  Game game1 = Game(n,m);
+  game = game1;
+  play();
   return 0;
 }

@@ -5,8 +5,8 @@
 using namespace std;
 class Game {
 public:
-  int current_move;
-  char player_at_new_pos;
+  vector<int> current_move;
+  vector<char> player_at_new_pos;
   void move(int mov);
   void undo(int mov);
   vector<string> board();
@@ -26,8 +26,8 @@ public:
   bool check_ne(int x1,int y1,char player,vector<string> &current_board,bool opp);
   int encode_move(int type,int xs,int ys,int x,int y);
   vector<int> decode_move(int mov);
-  void attack_move1(bool del,int color1,int color2,int xs,int ys,int x,int y);
-  void attack_move2(bool del,int color1,int color2,int xs,int ys,int x,int y);
+  void attack_move1(bool del,int color1,int color2,int x,int y);
+  void attack_move2(bool del,int color1,int color2,int x,int y);
   void insert_move(int color1,int color2,int type,int xs,int ys,int x,int y);
   void delete_move(int color1,int color2,int type,int xs,int ys,int x,int y);
   void add_retreat_moves(int color1,int color2,int x1,int y1,char player,vector<string> &current_board);
@@ -37,11 +37,11 @@ public:
   int n;
   unordered_set<int> validMoves(int player);
   int  encode_vector_move(vector<int> move);
+  void print_moves();
+  void print_board();
 private:
   void load_new_board();
   void load_data();
-  void print_board();
-  void print_moves();
   vector<int> create_vector(int type,int xs,int ys,int x,int y);
 
 };

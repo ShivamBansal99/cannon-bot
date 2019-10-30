@@ -8,29 +8,37 @@ Game::Game(int n, int m){
   load_new_board();
 }
 void Game::move(int mov){
-	current_move = mov;
+	current_move.push_back(mov);
 	vector<int > move = decode_move(mov);
-	player_at_new_pos = the_board[move[3]][move[4]];
-	if(player_at_new_pos !='-'){
-		letsdel(move[3]*m+move[4],player_at_new_pos,true);
+	player_at_new_pos.push_back(the_board[move[3]][move[4]]);
+	if(player_at_new_pos.back() !='-'){
+		letsdel(move[3]*m+move[4],player_at_new_pos.back(),true);
+		the_board[move[3]][move[4]]='-';
 	}
 	if(move[0]==0){
 		char player_at_this = the_board[move[1]][move[2]];
-		letsdel(move[1]*m+move[2],player_at_new_pos,true);
-		letsdel(move[3]*m+move[4],player_at_new_pos,false);
+		letsdel(move[1]*m+move[2],player_at_this,true);
+		the_board[move[1]][move[2]] = '-';
+		letsdel(move[3]*m+move[4],player_at_this,false);
+		the_board[move[3]][move[4]] = player_at_this;
 	}
 	return ;
 }
 void Game::undo(int mov){
-	vector<int > move = decode_move(current_move);
+	vector<int > move = decode_move(current_move.back());
 	if(move[0]==0){
 		char player_at_this = the_board[move[3]][move[4]];
-		letsdel(move[3]*m+move[4],player_at_new_pos,true);
-		letsdel(move[1]*m+move[2],player_at_new_pos,false);
+		letsdel(move[3]*m+move[4],player_at_this,true);
+		the_board[move[3]][move[4]] = '-';
+		letsdel(move[1]*m+move[2],player_at_this,false);
+		the_board[move[1]][move[2]] = player_at_this;
 	}
-	if(player_at_new_pos !='-'){
-		letsdel(move[3]*m+move[4],player_at_new_pos,false);
+	if(player_at_new_pos.back() !='-'){
+		letsdel(move[3]*m+move[4],player_at_new_pos.back(),false);
+		the_board[move[3]][move[4]] = player_at_new_pos.back();
 	}
+	current_move.pop_back();
+	player_at_new_pos.pop_back();
 	return;
 }
 vector<string> Game::board(){
@@ -75,50 +83,46 @@ vector<int>  Game::decode_move(int mov){
 	the_move.push_back(y);
 	return the_move;
 }
-void Game::attack_move1(bool del,int color1,int color2,int xs,int ys,int x,int y){
+void Game::attack_move1(bool del,int color1,int color2,int x,int y){
 	if(color1==1){
-		xs=n-1-xs;ys=m-1-ys;x=n-1-x;y=m-1-y;
+		x=n-1-x;y=m-1-y;
 	}
-	if(x>=0&&y>=0&&x<=(n-1)&&y<=(m-1)){
-		if(color2==0){
-			if(del){
-				attack_space_of_soldiers_black[x][y]--;
-			}
-			else{
-				attack_space_of_soldiers_black[x][y]++;
-			}
+	if(color2==0){
+		if(del){
+			attack_space_of_soldiers_black[x][y]--;
 		}
 		else{
-			if(del){
-				attack_space_of_soldiers_white[x][y]--;
-			}
-			else{
-				attack_space_of_soldiers_white[x][y]++;
-			}
+			attack_space_of_soldiers_black[x][y]++;
+		}
+	}
+	else{
+		if(del){
+			attack_space_of_soldiers_white[x][y]--;
+		}
+		else{
+			attack_space_of_soldiers_white[x][y]++;
 		}
 	}
 	return;
 }
-void Game::attack_move2(bool del,int color1,int color2,int xs,int ys,int x,int y){
+void Game::attack_move2(bool del,int color1,int color2,int x,int y){
 	if(color1==1){
-		xs=n-1-xs;ys=m-1-ys;x=n-1-x;y=m-1-y;
+		x=n-1-x;y=m-1-y;
 	}
-	if(x>=0&&y>=0&&x<=(n-1)&&y<=(m-1)){
-		if(color2==0){
-			if(del){
-				attack_space_of_cannons_black[x][y]--;
-			}
-			else{
-				attack_space_of_cannons_black[x][y]++;
-			}
+	if(color2==0){
+		if(del){
+			attack_space_of_cannons_black[x][y]--;
 		}
 		else{
-			if(del){
-				attack_space_of_cannons_white[x][y]--;
-			}
-			else{
-				attack_space_of_cannons_white[x][y]++;
-			}
+			attack_space_of_cannons_black[x][y]++;
+		}
+	}
+	else{
+		if(del){
+			attack_space_of_cannons_white[x][y]--;
+		}
+		else{
+			attack_space_of_cannons_white[x][y]++;
 		}
 	}
 	return;
@@ -168,7 +172,7 @@ void  Game::letsdel(int init_pos,char player,bool del){
 				space_of_soldiers_black.erase(init_pos);
 			else
 				space_of_soldiers_black.insert(init_pos);
-		opp_player='W';townhall='#';opp_townhall='O';
+		player='B';opp_player='W';townhall='#';opp_townhall='O';
 		for(int i=0;i<n;i++){
 			current_board.push_back(the_board[i]);
 		}
@@ -181,7 +185,7 @@ void  Game::letsdel(int init_pos,char player,bool del){
 			else
 				space_of_soldiers_white.insert(init_pos);
 		init_pos=m*n-1-init_pos;
-		opp_player='B';townhall='O';opp_townhall='#';
+		player='W';opp_player='B';townhall='O';opp_townhall='#';
 		for(int i=0;i<n;i++){
 			string temp="";
 			for(int j=0;j<m;j++){
@@ -195,46 +199,60 @@ void  Game::letsdel(int init_pos,char player,bool del){
 	//cout<<"d1";
 	//////Forward of same player
 	if(!is_townhall){
-		attack_move1(del,color,color,xx,yy,xx-1,yy);
-		attack_move1(del,color,color,xx,yy,xx-1,yy+1);
-		attack_move1(del,color,color,xx,yy,xx-1,yy-1);
-		if(xx-1>=0&&!(current_board[xx-1][yy]==player||current_board[xx-1][yy]==townhall)){
-			del?delete_move(color,color,0,xx,yy,xx-1,yy):insert_move(color,color,0,xx,yy,xx-1,yy);
-		}
-		if(xx-1>=0&&(yy+1)<=(m-1)&&!(current_board[xx-1][yy+1]==player||current_board[xx-1][yy+1]==townhall)){
-			del?delete_move(color,color,0,xx,yy,xx-1,yy+1):insert_move(color,color,0,xx,yy,xx-1,yy+1); 
-		}
-		if(xx-1>=0&&yy-1>=0&&!(current_board[xx-1][yy-1]==player||current_board[xx-1][yy-1]==townhall)){
-			del?delete_move(color,color,0,xx,yy,xx-1,yy-1):insert_move(color,color,0,xx,yy,xx-1,yy-1);
+		if(xx-1>=0){
+			attack_move1(del,color,color,xx-1,yy);
+			if(!(current_board[xx-1][yy]==player||current_board[xx-1][yy]==townhall)){
+				del?delete_move(color,color,0,xx,yy,xx-1,yy):insert_move(color,color,0,xx,yy,xx-1,yy);
+			}
+			if(yy-1>=0){
+				attack_move1(del,color,color,xx-1,yy-1);
+				if(!(current_board[xx-1][yy-1]==player||current_board[xx-1][yy-1]==townhall)){
+					del?delete_move(color,color,0,xx,yy,xx-1,yy-1):insert_move(color,color,0,xx,yy,xx-1,yy-1);
+				}
+			}
+			if(yy+1<=(m-1)){
+				attack_move1(del,color,color,xx-1,yy+1);
+				if(!(current_board[xx-1][yy+1]==player||current_board[xx-1][yy+1]==townhall)){
+					del?delete_move(color,color,0,xx,yy,xx-1,yy+1):insert_move(color,color,0,xx,yy,xx-1,yy+1); 
+				}
+			}
 		}
 	}
 	//cout<<"d2";
 	//////////Side of same player
 	if(!is_townhall){
-		attack_move1(del,color,color,xx,yy,xx,yy-1);
-		attack_move1(del,color,color,xx,yy,xx,yy+1);
-		if((yy-1)>=0&&(current_board[xx][yy-1]==opp_player||current_board[xx][yy-1]==opp_townhall)){
-			del?delete_move(color,color,0,xx,yy,xx,yy-1):insert_move(color,color,0,xx,yy,xx,yy-1);
+		if((yy-1)>=0){
+			attack_move1(del,color,color,xx,yy-1);
+			if(current_board[xx][yy-1]==opp_player||current_board[xx][yy-1]==opp_townhall){
+				del?delete_move(color,color,0,xx,yy,xx,yy-1):insert_move(color,color,0,xx,yy,xx,yy-1);
+			}
 		}
-		if((yy+1)<=(m-1)&&(current_board[xx][yy+1]==opp_player||current_board[xx][yy+1]==opp_townhall)){
-			del?delete_move(color,color,0,xx,yy,xx,yy+1):insert_move(color,color,0,xx,yy,xx,yy+1);
+		if((yy+1)<=(m-1)){
+			attack_move1(del,color,color,xx,yy+1);
+			if(current_board[xx][yy+1]==opp_player||current_board[xx][yy+1]==opp_townhall){
+				del?delete_move(color,color,0,xx,yy,xx,yy+1):insert_move(color,color,0,xx,yy,xx,yy+1);
+			}
 		}
 	}
 	//cout<<"d3";
 	///////////Retreat of same player
 	if(!is_townhall){
 		if((xx+2)<=(n-1)&&check_ne(xx,yy,opp_player,current_board,false)){
-			attack_move1(del,color,color,xx,yy,xx+2,yy-2);
-			attack_move1(del,color,color,xx,yy,xx+2,yy+2);
-			attack_move1(del,color,color,xx,yy,xx+2,yy);
+			attack_move1(del,color,color,xx+2,yy);
 			if(!(current_board[xx+2][yy]==player||current_board[xx+2][yy]==townhall)){
 				del?delete_move(color,color,0,xx,yy,xx+2,yy):insert_move(color,color,0,xx,yy,xx+2,yy);
 			}
-			if((yy+2)<=(m-1)&&!(current_board[xx+2][yy+2]==player||current_board[xx+2][yy+2]==townhall)){
-				del?delete_move(color,color,0,xx,yy,xx+2,yy+2):insert_move(color,color,0,xx,yy,xx+2,yy+2);
+			if((yy+2)<=(m-1)){
+				attack_move1(del,color,color,xx+2,yy+2);
+				if(!(current_board[xx+2][yy+2]==player||current_board[xx+2][yy+2]==townhall)){
+					del?delete_move(color,color,0,xx,yy,xx+2,yy+2):insert_move(color,color,0,xx,yy,xx+2,yy+2);
+				}
 			}
-			if((yy-2)>=0&&!(current_board[xx+2][yy-2]==player||current_board[xx+2][yy-2]==townhall)){
-				del?delete_move(color,color,0,xx,yy,xx+2,yy-2):insert_move(color,color,0,xx,yy,xx+2,yy-2);
+			if((yy-2)>=0){
+				attack_move1(del,color,color,xx+2,yy-2);
+				if(!(current_board[xx+2][yy-2]==player||current_board[xx+2][yy-2]==townhall)){
+					del?delete_move(color,color,0,xx,yy,xx+2,yy-2):insert_move(color,color,0,xx,yy,xx+2,yy-2);
+				}
 			}
 		}
 	}
@@ -249,14 +267,15 @@ void  Game::letsdel(int init_pos,char player,bool del){
 				if((xx-i)<=(n-1)&&(xx-i)>=0&&(yy-j)<=(m-1)&&(yy-j)>=0&&(xx+3*i)<=(n-1)&&(xx+3*i)>=0&&(yy+3*j)<=(m-1)&&(yy+3*j)>=0&&
 					current_board[xx+i][yy+j]==player&&current_board[xx-i][yy-j]==player&&current_board[xx+2*i][yy+2*j]=='-')
 				{
-					attack_move2(del,color,color,xx,yy,xx+4*i,yy+4*j);
-					attack_move2(del,color,color,xx,yy,xx+3*i,yy+3*j);
+					attack_move2(del,color,color,xx+3*i,yy+3*j);
 					if(!(current_board[xx+3*i][yy+3*j]==player||current_board[xx+3*i][yy+3*j]==townhall)){
 						del?delete_move(color,color,1,xx,yy,xx+3*i,yy+3*j):insert_move(color,color,1,xx,yy,xx+3*i,yy+3*j);
 					}
-					if((xx+4*i)<=(n-1)&&(xx+4*i)>=0&&(yy+4*j)<=(m-1)&&(yy+4*j)>=0&&
-						!(current_board[xx+4*i][yy+4*j]==player||current_board[xx+4*i][yy+4*j]==townhall)){
-						del?delete_move(color,color,1,xx,yy,xx+4*i,yy+4*j):insert_move(color,color,1,xx,yy,xx+4*i,yy+4*j);
+					if((xx+4*i)<=(n-1)&&(xx+4*i)>=0&&(yy+4*j)<=(m-1)&&(yy+4*j)>=0){
+						attack_move2(del,color,color,xx+4*i,yy+4*j);
+						if(!(current_board[xx+4*i][yy+4*j]==player||current_board[xx+4*i][yy+4*j]==townhall)){
+							del?delete_move(color,color,1,xx,yy,xx+4*i,yy+4*j):insert_move(color,color,1,xx,yy,xx+4*i,yy+4*j);
+						}
 					}
 				}
 			}
@@ -349,34 +368,34 @@ void  Game::letsdel(int init_pos,char player,bool del){
 				}
 				if((xx+4*i)>=0&&(yy+4*j)>=0&&(xx+4*i)<=(n-1)&&(yy+4*j)<=(m-1)&&current_board[xx+2*i][yy+2*j]==player&&current_board[xx+i][yy+j]==player
 					&&current_board[xx+3*i][yy+3*j]=='-'){
-					attack_move2(del,color,color,xx+i,yy+j,xx+4*i,yy+4*j);
+					attack_move2(del,color,color,xx+4*i,yy+4*j);
 					if(!(current_board[xx+4*i][yy+4*j]==player||current_board[xx+4*i][yy+4*j]==townhall))	
 						del?delete_move(color,color,1,xx+i,yy+j,xx+4*i,yy+4*j):insert_move(color,color,1,xx+i,yy+j,xx+4*i,yy+4*j);
 				}
 				if((xx+5*i)>=0&&(yy+5*j)>=0&&(xx+5*i)<=(n-1)&&(yy+5*j)<=(m-1)&&current_board[xx+2*i][yy+2*j]==player&&current_board[xx+i][yy+j]==player
 					&&current_board[xx+3*i][yy+3*j]=='-'){
-					attack_move2(del,color,color,xx+i,yy+j,xx+5*i,yy+5*j);
+					attack_move2(del,color,color,xx+5*i,yy+5*j);
 					if(!(current_board[xx+5*i][yy+5*j]==player||current_board[xx+5*i][yy+5*j]==townhall))	
 						del?delete_move(color,color,1,xx+i,yy+j,xx+5*i,yy+5*j):insert_move(color,color,1,xx+i,yy+j,xx+5*i,yy+5*j);
 				}
 				if((xx+2*i)>=0&&(yy+2*j)>=0&&(xx+2*i)<=(n-1)&&(yy+2*j)<=(m-1)&&(xx-2*i)>=0&&(yy-2*j)>=0&&(xx-2*i)<=(n-1)&&(yy-2*j)<=(m-1)
 					&&current_board[xx+2*i][yy+2*j]==player&&current_board[xx+i][yy+j]==player
 					&&current_board[xx-i][yy-j]=='-'){
-					attack_move2(del,color,color,xx+i,yy+j,xx-2*i,yy-2*j);
+					attack_move2(del,color,color,xx-2*i,yy-2*j);
 					if(!(current_board[xx-2*i][yy-2*j]==player||current_board[xx-2*i][yy-2*j]==townhall))	
 						del?delete_move(color,color,1,xx+i,yy+j,xx-2*i,yy-2*j):insert_move(color,color,1,xx+i,yy+j,xx-2*i,yy-2*j);
 				}
 				if((xx+2*i)>=0&&(yy+2*j)>=0&&(xx+2*i)<=(n-1)&&(yy+2*j)<=(m-1)&&(xx-3*i)>=0&&(yy-3*j)>=0&&(xx-3*i)<=(n-1)&&(yy-3*j)<=(m-1)
 					&&current_board[xx+2*i][yy+2*j]==player&&current_board[xx+i][yy+j]==player
 					&&current_board[xx-i][yy-j]=='-'){
-					attack_move2(del,color,color,xx+i,yy+j,xx-3*i,yy-3*j);
+					attack_move2(del,color,color,xx-3*i,yy-3*j);
 					if(!(current_board[xx-3*i][yy-3*j]==player||current_board[xx-3*i][yy-3*j]==townhall))	
 						del?delete_move(color,color,1,xx+i,yy+j,xx-3*i,yy-3*j):insert_move(color,color,1,xx+i,yy+j,xx-3*i,yy-3*j);
 				}
 				if((xx+i)>=0&&(yy+j)>=0&&(xx+i)<=(n-1)&&(yy+j)<=(m-1)&&(xx-2*i)>=0&&(yy-2*j)>=0&&(xx-2*i)<=(n-1)&&(yy-2*j)<=(m-1)
 					&&current_board[xx-2*i][yy-2*j]==player&&current_board[xx-i][yy-j]==player
 					&&current_board[xx+i][yy+j]=='-'){
-					del?delete_move(color,color,0,xx+2*i,yy+2*j,xx+i,yy+j):insert_move(color,color,0,xx-2*i,yy-2*j,xx+i,yy+j);
+					del?delete_move(color,color,0,xx-2*i,yy-2*j,xx+i,yy+j):insert_move(color,color,0,xx-2*i,yy-2*j,xx+i,yy+j);
 				}
 			}
 		}
@@ -397,13 +416,13 @@ void  Game::letsdel(int init_pos,char player,bool del){
 		}
 	}
 	///////Retreat now possible at that pos
-	if(xx-2>=0&&check_ne(xx-2,yy,opp_player,current_board,false)){
+	if(xx-2>=0&&current_board[xx-2][yy]==player&&check_ne(xx-2,yy,opp_player,current_board,false)){
 		del?insert_move(color,color,0,xx-2,yy,xx,yy):delete_move(color,color,0,xx-2,yy,xx,yy);
 	}
-	if(xx-2>=0&&yy-2>=0&&check_ne(xx-2,yy-2,opp_player,current_board,false)){
+	if(xx-2>=0&&yy-2>=0&&current_board[xx-2][yy-2]==player&&check_ne(xx-2,yy-2,opp_player,current_board,false)){
 		del?insert_move(color,color,0,xx-2,yy-2,xx,yy):delete_move(color,color,0,xx-2,yy-2,xx,yy);
 	}
-	if(xx-2>=0&&yy+2<=(m-1)&&check_ne(xx-2,yy+2,opp_player,current_board,false)){
+	if(xx-2>=0&&yy+2<=(m-1)&&current_board[xx-2][yy+2]==player&&check_ne(xx-2,yy+2,opp_player,current_board,false)){
 		del?insert_move(color,color,0,xx-2,yy+2,xx,yy):delete_move(color,color,0,xx-2,yy+2,xx,yy);
 	}
 	////////////////Cannon is created
@@ -412,17 +431,18 @@ void  Game::letsdel(int init_pos,char player,bool del){
 			if(i==0&&j==0){
 				continue;
 			}
-			if(xx+(3*i)>=0&&yy+(3*j)>=0&&(xx+3*i)<=(n-1)&&(yy+(3*j))<=(m-1)&&
+			if((xx+3*i)>=0&&(yy+3*j)>=0&&(xx+3*i)<=(n-1)&&(yy+3*j)<=(m-1)&&
 				current_board[xx+i][yy+j]==player&&current_board[xx+(2*i)][yy+(2*j)]==player&&current_board[xx+(3*i)][yy+(3*j)]==player){
+				attack_move1(!del,color,color,xx,yy);
 				del?insert_move(color,color,0,xx+(3*i),yy+(3*j),xx,yy):delete_move(color,color,0,xx+(3*i),yy+(3*j),xx,yy);
 				if((xx-i)<=(n-1)&&(yy-j)<=(m-1)&&(xx-i)>=0&&(yy-j)>=0){
-					attack_move2(!del,color,color,xx+2*i,yy+2*j,xx-i,yy-j);
+					attack_move2(!del,color,color,xx-i,yy-j);
 					if(!(current_board[xx-i][yy-j]==player||current_board[xx-i][yy-j]==townhall))
 						del?insert_move(color,color,1,xx+2*i,yy+2*j,xx-i,yy-j):delete_move(color,color,1,xx+2*i,yy+2*j,xx-i,yy-j);
 				}
 				if((xx-2*i)<=(n-1)&&(yy-2*j)<=(m-1)&&(xx-2*i)>=0&&(yy-2*j)>=0){
-					attack_move2(!del,color,color,xx+2*i,yy+2*j,xx-2*i,yy-2*j);
-					if(!(current_board[xx-2][yy-2]==player||current_board[xx-2][yy-2]==townhall))
+					attack_move2(!del,color,color,xx-2*i,yy-2*j);
+					if(!(current_board[xx-2*i][yy-2*j]==player||current_board[xx-2*i][yy-2*j]==townhall))
 						del?insert_move(color,color,1,xx+2*i,yy+2*j,xx-2*i,yy-2*j):delete_move(color,color,1,xx+2*i,yy+2*j,xx-2*i,yy-2*j);
 				}
 			}
@@ -431,11 +451,11 @@ void  Game::letsdel(int init_pos,char player,bool del){
 	///////////////Opp team
 	////////////////////////////Sideways moves
 	if(yy-1>=0&&current_board[xx][yy-1]==opp_player){
-		attack_move1(del,color,1-color,xx,yy-1,xx,yy);
+		attack_move1(del,color,1-color,xx,yy);
 		del?delete_move(color,1-color,0,xx,yy-1,xx,yy):insert_move(color,1-color,0,xx,yy-1,xx,yy);
 	}
 	if(yy+1<=(m-1)&&current_board[xx][yy+1]==opp_player){
-		attack_move1(del,color,1-color,xx,yy+1,xx,yy);
+		attack_move1(del,color,1-color,xx,yy);
 		del?delete_move(color,1-color,0,xx,yy+1,xx,yy):insert_move(color,1-color,0,xx,yy+1,xx,yy);
 	}
 	////////////////Cannon now free
@@ -446,15 +466,16 @@ void  Game::letsdel(int init_pos,char player,bool del){
 			}
 			if(xx+(3*i)>=0&&yy+(3*j)>=0&&xx+3*i<=(n-1)&&yy+(3*j)<=(m-1)&&
 				current_board[xx+i][yy+j]==opp_player&&current_board[xx+(2*i)][yy+(2*j)]==opp_player&&current_board[xx+(3*i)][yy+(3*j)]==opp_player){
+				attack_move1(!del,color,1-color,xx,yy);
 				del?insert_move(color,1-color,0,xx+(3*i),yy+(3*j),xx,yy):delete_move(color,1-color,0,xx+(3*i),yy+(3*j),xx,yy);
 				if((xx-i)<=(n-1)&&(yy-j)<=(m-1)&&(xx-i)>=0&&(yy-j)>=0){
-					attack_move2(!del,color,1-color,xx+2*i,yy+2*j,xx-i,yy-j);
+					attack_move2(!del,color,1-color,xx-i,yy-j);
 					if(!(current_board[xx-i][yy-j]==opp_player||current_board[xx-i][yy-j]==opp_townhall))
 						del?insert_move(color,1-color,1,xx+2*i,yy+2*j,xx-i,yy-j):delete_move(color,1-color,1,xx+2*i,yy+2*j,xx-i,yy-j);
 				}
 				if((xx-2*i)<=(n-1)&&(yy-2*j)<=(m-1)&&(xx-2*i)>=0&&(yy-2*j)>=0){
-					attack_move2(!del,color,1-color,xx+2*i,yy+2*j,xx-2*i,yy-2*j);
-					if(!(current_board[xx-2][yy-2]==opp_player||current_board[xx-2][yy-2]==opp_townhall))
+					attack_move2(!del,color,1-color,xx-2*i,yy-2*j);
+					if(!(current_board[xx-2*i][yy-2*j]==opp_player||current_board[xx-2*i][yy-2*j]==opp_townhall))
 						del?insert_move(color,1-color,1,xx+2*i,yy+2*j,xx-2*i,yy-2*j):delete_move(color,1-color,1,xx+2*i,yy+2*j,xx-2*i,yy-2*j);
 				}
 			}
@@ -465,25 +486,22 @@ void  Game::letsdel(int init_pos,char player,bool del){
 	if(!is_townhall){
 		char tempp=current_board[xx][yy];
 		current_board[xx][yy]='-';
-		if(yy-1>=0&&current_board[xx][yy-1]==opp_player&&(!check_ne(xx,yy-1,player,current_board,true))){
-			attack_move1(del,color,1-color,xx,yy-1,xx-2,yy-1);attack_move1(del,color,1-color,xx,yy-1,xx-2,yy-3);attack_move1(del,color,1-color,xx,yy-1,xx-2,yy+1);
-			del?delete_retreat_moves(color,1-color,xx,yy-1,player,current_board):add_retreat_moves(color,1-color,xx,yy-1,player,current_board);
+		if(xx-2>=0){
+			if(yy-1>=0&&current_board[xx][yy-1]==opp_player&&(!check_ne(xx,yy-1,player,current_board,true))){
+				del?delete_retreat_moves(color,1-color,xx,yy-1,player,current_board):add_retreat_moves(color,1-color,xx,yy-1,player,current_board);
+			}
+			if(yy+1<=(m-1)&&current_board[xx][yy+1]==opp_player&&(!check_ne(xx,yy+1,player,current_board,true))){
+				del?delete_retreat_moves(color,1-color,xx,yy+1,player,current_board):add_retreat_moves(color,1-color,xx,yy+1,player,current_board);
+			}
 		}
-		if(yy+1<=(m-1)&&current_board[xx][yy+1]==opp_player&&(!check_ne(xx,yy+1,player,current_board,true))){
-			attack_move1(del,color,1-color,xx,yy-1,xx-2,yy+1);attack_move1(del,color,1-color,xx,yy-1,xx-2,yy+3);attack_move1(del,color,1-color,xx,yy-1,xx-2,yy-1);
-			del?delete_retreat_moves(color,1-color,xx,yy+1,player,current_board):add_retreat_moves(color,1-color,xx,yy+1,player,current_board);
-		}
-		if(xx-1>=0){
+		if(xx-3>=0){
 			if(current_board[xx-1][yy]==opp_player&&(!check_ne(xx-1,yy,player,current_board,true))){
-				attack_move1(del,color,1-color,xx,yy-1,xx-3,yy);attack_move1(del,color,1-color,xx,yy-1,xx-3,yy-2);attack_move1(del,color,1-color,xx,yy-1,xx-3,yy+2);
 				del?delete_retreat_moves(color,1-color,xx-1,yy,player,current_board):add_retreat_moves(color,1-color,xx-1,yy,player,current_board);
 			}
 			if(yy-1>=0&&current_board[xx-1][yy-1]==opp_player&&(!check_ne(xx-1,yy-1,player,current_board,true))){
-				attack_move1(del,color,1-color,xx,yy-1,xx-3,yy-1);attack_move1(del,color,1-color,xx,yy-1,xx-3,yy-3);attack_move1(del,color,1-color,xx,yy-1,xx-3,yy+1);
 				del?delete_retreat_moves(color,1-color,xx-1,yy-1,player,current_board):add_retreat_moves(color,1-color,xx-1,yy-1,player,current_board);
 			}
 			if(yy+1<=(m-1)&&current_board[xx-1][yy+1]==opp_player&&(!check_ne(xx-1,yy+1,player,current_board,true))){
-				attack_move1(del,color,1-color,xx,yy-1,xx-3,yy+1);attack_move1(del,color,1-color,xx,yy-1,xx-3,yy+3);attack_move1(del,color,1-color,xx,yy-1,xx-3,yy-1);
 				del?delete_retreat_moves(color,1-color,xx-1,yy+1,player,current_board):add_retreat_moves(color,1-color,xx-1,yy+1,player,current_board);
 			}
 		}
@@ -491,6 +509,7 @@ void  Game::letsdel(int init_pos,char player,bool del){
 	}
 	return;
 }
+
 
 
 
@@ -561,27 +580,29 @@ void  Game::load_data(){
 	return;
 }
 void  Game::print_board(){
+	cerr<<endl;
 	for(int i=0;i<n;i++){
-		cout<<the_board[i]<<endl;
+		cerr<<the_board[i]<<endl;
 	}
+	cerr<<endl;
 	return;
 }
 void  Game::print_moves(){
-	cout<<"Possible moves black: "<<possible_moves_black.size()<<endl;
+	cerr<<"Possible moves black: "<<possible_moves_black.size()<<endl;
 	for(auto itr=possible_moves_black.begin();itr!=possible_moves_black.end();itr++){
 		vector<int> nee=decode_move((*itr));
 		for(int j=0;j<nee.size();j++){
-			cout<<nee[j]<<" ";
+			cerr<<nee[j]<<" ";
 		}
-		cout<<endl;
+		cerr<<endl;
 	}
-	cout<<"Possible moves white: "<<possible_moves_white.size()<<endl;
+	cerr<<"Possible moves white: "<<possible_moves_white.size()<<endl;
 	for(auto itr=possible_moves_white.begin();itr!=possible_moves_white.end();itr++){
 		vector<int> nee=decode_move((*itr));
 		for(int j=0;j<nee.size();j++){
-			cout<<nee[j]<<" ";
+			cerr<<nee[j]<<" ";
 		}
-		cout<<endl;
+		cerr<<endl;
 	}
 }
 float Game::eval_function(int move){
