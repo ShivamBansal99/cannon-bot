@@ -5,8 +5,10 @@
 using namespace std;
 class Game {
 public:
-  char move(int mov);
-  void undo(int mov,char prev_player);
+  int current_move;
+  char player_at_new_pos;
+  void move(int mov);
+  void undo(int mov);
   vector<string> board();
   Game(int n, int m);
   float eval_function(int move);

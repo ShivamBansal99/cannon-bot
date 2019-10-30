@@ -7,10 +7,31 @@ Game::Game(int n, int m){
   Game::m=m;
   load_new_board();
 }
-char Game::move(int mov){
-	return 'a';
+void Game::move(int mov){
+	current_move = mov;
+	vector<int > move = decode_move(mov);
+	player_at_new_pos = the_board[move[3]][move[4]];
+	if(player_at_new_pos !='-'){
+		letsdel(move[3]*m+move[4],player_at_new_pos,true);
+	}
+	if(move[0]==0){
+		char player_at_this = the_board[move[1]][move[2]];
+		letsdel(move[1]*m+move[2],player_at_new_pos,true);
+		letsdel(move[3]*m+move[4],player_at_new_pos,false);
+	}
+	return ;
 }
-void Game::undo(int mov,char prev_player){
+void Game::undo(int mov){
+	vector<int > move = decode_move(current_move);
+	if(move[0]==0){
+		char player_at_this = the_board[move[3]][move[4]];
+		letsdel(move[3]*m+move[4],player_at_new_pos,true);
+		letsdel(move[1]*m+move[2],player_at_new_pos,false);
+	}
+	if(player_at_new_pos !='-'){
+		letsdel(move[3]*m+move[4],player_at_new_pos,false);
+	}
+	return;
 }
 vector<string> Game::board(){
   return the_board;

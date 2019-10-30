@@ -13,9 +13,9 @@ float minimax(int depth,Game &game,float alpha,float beta,bool isMax) {
         bestMove = INT_MIN;
         if(newGameMoves.size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
         for (auto i = newGameMoves.begin(); i != newGameMoves.end(); i++) {
-            char prev_player=game.move(*i);
+            game.move(*i);
             bestMove = max(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
-            game.undo(*i,prev_player);
+            game.undo(*i);
             alpha = max(alpha, bestMove);
             if (beta <= alpha) {
                 return bestMove;
@@ -27,9 +27,9 @@ float minimax(int depth,Game &game,float alpha,float beta,bool isMax) {
         bestMove = INT_MAX;
         if(newGameMoves.size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
         for (auto i = newGameMoves.begin(); i != newGameMoves.end(); i++) {
-            char prev_player=game.move(*i);
+            game.move(*i);
             bestMove = min(bestMove, minimax(depth - 1, game, alpha, beta, !isMax));
-            game.undo(*i,prev_player);
+            game.undo(*i);
             beta = min(beta, bestMove);
             if (beta <= alpha) {
                 return bestMove;
@@ -81,7 +81,7 @@ void play(Game &game){
   int initial_count=count_soldiers(game.the_board);
   int num_soldiers=0;
   if(player == 1){
-    char prev_player=game.move(game.encode_vector_move(move_to_array()));
+    game.move(game.encode_vector_move(move_to_array()));
     movess++;
   }
   while(1){
@@ -101,14 +101,14 @@ void play(Game &game){
     float bestValue=INT_MIN;
     int best_move = 0;
     for(auto i = validMoves.begin();i!=validMoves.end();i++){
-      char prev_player=game.move(*i);
+      game.move(*i);
       float temp = minimax(depp, game, INT_MIN, INT_MAX, false);
       //cout<<"a "<<validMoves[i][0]<<" "<<validMoves[i][1]<<" "<<validMoves[i][2]<<" "<<validMoves[i][3]<<" "<<validMoves[i][4]<<" "<<temp<<endl;
       best_move = bestValue<temp?*i:best_move;
       bestValue = max(bestValue, temp);
-      game.undo(*i,prev_player);
+      game.undo(*i);
     }
-    char prev_player=game.move(best_move);
+    game.move(best_move);
     movess++;
     play_move_seq(game.decode_move(best_move));
     game.move(game.encode_vector_move(move_to_array()));
