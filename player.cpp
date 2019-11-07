@@ -3,8 +3,7 @@
 #include "Game.h"
 using namespace std;
 int player = 0;
-Game game = Game(8,8);
-float minimax(int depth,float alpha,float beta,bool isMax) {
+float minimax(Game &game,int depth,float alpha,float beta,bool isMax) {
     if (depth == 0) {
         return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
     }
@@ -12,10 +11,12 @@ float minimax(int depth,float alpha,float beta,bool isMax) {
     if (isMax) {
         unordered_set<int> newGameMoves = game.validMoves(player);
         bestMove = INT_MIN;
-        if(newGameMoves.size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
+        if(newGameMoves.size()==0 || game.num_black_townhalls==game.m/2-2 || game.num_white_townhalls==game.m/2-2 || game.validMoves(1-player).size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
+        //if(newGameMoves.size()==0 ) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
+
         for (auto i = newGameMoves.begin(); i != newGameMoves.end(); i++) {
             game.move(*i);
-            bestMove = max(bestMove, minimax(depth - 1, alpha, beta, !isMax));
+            bestMove = max(bestMove, minimax(game,depth - 1, alpha, beta, !isMax));
             game.undo(*i);
             alpha = max(alpha, bestMove);
             if (beta <= alpha) {
@@ -26,10 +27,11 @@ float minimax(int depth,float alpha,float beta,bool isMax) {
     } else {
       unordered_set<int> newGameMoves = game.validMoves(1-player);
         bestMove = INT_MAX;
-        if(newGameMoves.size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
+        if(newGameMoves.size()==0 || game.num_black_townhalls==game.m/2-2 || game.num_white_townhalls==game.m/2-2 || game.validMoves(1-player).size()==0) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
+        //if(newGameMoves.size()==0 ) return player==0?game.eval_function(isMax?player:1-player):((-1)*game.eval_function(isMax?player:1-player));
         for (auto i = newGameMoves.begin(); i != newGameMoves.end(); i++) {
             game.move(*i);
-            bestMove = min(bestMove, minimax(depth - 1, alpha, beta, !isMax));
+            bestMove = min(bestMove, minimax(game,depth - 1, alpha, beta, !isMax));
             game.undo(*i);
             beta = min(beta, bestMove);
             if (beta <= alpha) {
@@ -38,12 +40,6 @@ float minimax(int depth,float alpha,float beta,bool isMax) {
         }
         return bestMove;
     }
-}
-void print_board(){
-  for(int i=0;i<game.the_board.size();i++){
-    cerr<<game.the_board[i]<<endl;
-  }
-  return;
 }
 
 void play_move_seq(vector<int> move_sequence){
@@ -80,7 +76,7 @@ int count_soldiers(vector<string> boards){
   }
   return count;
 }
-void play(){
+void play(Game &game){
   string move;
   int depp=0;
   int movess=0;
@@ -91,44 +87,41 @@ void play(){
     movess++;
   }
   while(1){
-    num_soldiers=count_soldiers(game.the_board);
-    if(num_soldiers<=(initial_count/1.8)){
-      depp=depp+1;
-      initial_count=num_soldiers;
-    }
-    if(movess==2||movess==3){
-      depp=1;
-    }
-    if(movess==4||movess==5){
-      depp=2;
-    }
+    // num_soldiers=count_soldiers(game.the_board);
+    // if(num_soldiers<=(initial_count/1.8)){
+    //   depp=depp+1;
+    //   initial_count=num_soldiers;
+    // }
+    // if(movess==2||movess==3){
+    //   depp=2;
+    // }
+    // if(movess==4||movess==5){
+    //   depp=3;
+    // }
     unordered_set<int> validMoves = game.validMoves(player);
+    depp = (6.27f/log10(validMoves.size()));
     ////////////////////////////////////////////
     float bestValue=INT_MIN;
     int best_move = 0;
     // int ppp=game.possible_moves_white.size();
     // int qqq=game.possible_moves_black.size();
     //cerr<<endl<<ppp<<" "<<qqq<<endl;
-    for(auto i = validMoves.begin();i!=validMoves.end();i++){
-      
-      
 
+    // int error_check = game.encode_move(0,3,3,2,4);
+    for(auto i = validMoves.begin();i!=validMoves.end();i++){
       game.move(*i);
-      float temp = minimax(4,  INT_MIN, INT_MAX, false);
+      float temp = minimax(game,depp,  INT_MIN, INT_MAX, false);
       //cout<<"a "<<validMoves[i][0]<<" "<<validMoves[i][1]<<" "<<validMoves[i][2]<<" "<<validMoves[i][3]<<" "<<validMoves[i][4]<<" "<<temp<<endl;
+      //vector<int> lil = game.decode_move(*i);
+      //cerr<<lil[0]<<' '<<lil[1]<<' '<<lil[2]<<' '<<lil[3]<<' '<<lil[4]<<' '<<temp<<endl;
+      //cerr<<game.num_white_townhalls<<' '<<game.num_black_townhalls<<endl;
       best_move = bestValue<temp?*i:best_move;
       bestValue = max(bestValue, temp);
       game.undo(*i);
-    //   if(ppp!=game.possible_moves_white.size()||qqq!=game.possible_moves_black.size()){
-    //     cerr<<"ff"<<" "<<ppp<<"aa "<<qqq<<endl;
-    //    vector<int> dde=game.decode_move(*i);
-    //   cerr<<endl<<dde[0]<<" "<<dde[1]<<" "<<dde[2]<<" "<<dde[3]<<" "<<dde[4]<<endl;
-    //   game.print_board();
-    //   game.print_moves();
-    //   cerr<<"Please save me!!!"<<endl;
-    //   break;
-    // }
     }
+    //cerr<<depp<<endl;
+
+    // cerr<<bestValue<<endl;
     game.move(best_move);
     movess++;
     play_move_seq(game.decode_move(best_move));
@@ -154,9 +147,8 @@ int main(){
   player = data[0] - 1;
   int n = data[1];
   int m = data[2];
+  Game game = Game(8,8);
   int time_left = data[3];
-  Game game1 = Game(n,m);
-  game = game1;
-  play();
+  play(game);
   return 0;
 }
