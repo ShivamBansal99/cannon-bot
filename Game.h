@@ -42,6 +42,10 @@ public:
   int  encode_vector_move(vector<int> move);
   void print_moves();
   void print_board();
+  map<vector<string>,int> board_states;
+  void add_state();
+  void remove_state();
+  bool some_townhall_is_under_attack();
 private:
   void load_new_board();
   void load_data();

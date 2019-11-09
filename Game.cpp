@@ -7,6 +7,19 @@ Game::Game(int n, int m){
   Game::m=m;
   load_new_board();
 }
+
+void Game::add_state(){
+		board_states[the_board]++;
+}
+
+void Game::remove_state(){
+		if(board_states[the_board]==1){
+			board_states.erase(the_board);
+		}else{
+			board_states[the_board]--;
+		}
+}
+
 void Game::move(int mov){
 	current_move.push_back(mov);
 	vector<int > move = decode_move(mov);
@@ -22,9 +35,11 @@ void Game::move(int mov){
 		letsdel(move[3]*m+move[4],player_at_this,false);
 		the_board[move[3]][move[4]] = player_at_this;
 	}
+	add_state();
 	return ;
 }
 void Game::undo(int mov){
+	remove_state();
 	vector<int > move = decode_move(current_move.back());
 	if(move[0]==0){
 		char player_at_this = the_board[move[3]][move[4]];
@@ -705,11 +720,51 @@ void  Game::print_moves(){
 		cerr<<endl;
 	}
 }
+bool Game::some_townhall_is_under_attack(){
+	for(int i=0;i<m;i=i+2){
+		if(the_board[0][i]=='O'){
+			if(attack_space_of_cannons_black[0][i]!=0){
+				return true;
+			}
+			if(attack_space_of_soldiers_black[0][i]!=0){
+				return true;
+			}
+		}
+	}
+	for(int i=1;i<m;i=i+2){
+		if(the_board[n-1][i]=='#'){
+			if(attack_space_of_cannons_white[n-1][i]!=0){
+				return true;
+			}
+			if(attack_space_of_soldiers_white[n-1][i]!=0){
+				return true;
+			}
+		}
+	}
+	return false;
+}
 float Game::eval_function(int move){
-	float value=0.0f;
-
 	int num_black_soldiers=space_of_soldiers_black.size();
 	int num_white_soldiers=space_of_soldiers_white.size();
+
+
+	if(board_states[the_board]>2){
+			if(num_black_townhalls==num_white_townhalls){
+				return (num_black_soldiers-num_white_soldiers)*51;
+			}
+
+			if(num_black_townhalls< num_white_townhalls){
+				//cerr<<"f ";
+				return (-300);
+				
+			}
+			if(num_white_townhalls< num_black_townhalls){
+				//cerr<<"f ";
+				return (300.0);
+				
+			}
+	}
+	float value=0.0f;
 
 	int black_y_sum=0;
 	int white_y_sum=0;
@@ -732,28 +787,30 @@ float Game::eval_function(int move){
 	int position=0;int xx=0;int yy=0;int temp_value=0;
 	
 	if(num_black_townhalls==m/2-1){
-		value-=55.0;
+		value-=75.0;
 	}
 	if(num_white_townhalls==m/2-1){
-		value+=55.0;
+		value+=75.0;
 	}
 
 	if(num_black_townhalls==m/2-2 && num_white_townhalls==m/2){
-
+		//cerr<<"f ";
 		return (-10000.0);
 		
 	}
 	if(num_white_townhalls==m/2-2 && num_black_townhalls==m/2){
+		//cerr<<"f ";
 		return (10000.0);
 		
 	}
 
 	if(num_black_townhalls==m/2-2 && num_white_townhalls==m/2-1){
-
+		//cerr<<"g ";
 		return (-1000.0);
 		
 	}
 	if(num_white_townhalls==m/2-2 && num_black_townhalls==m/2-1){
+		//cerr<<"g ";
 		return (1000.0);
 		
 	}
@@ -776,32 +833,51 @@ float Game::eval_function(int move){
 	for(auto i=space_of_soldiers_black.begin();i!=space_of_soldiers_black.end();i++){
 		position=*i;
 		xx=position/m;yy=position%m;
-		black_y_sum+=n-1-xx;
+		if(attack_space_of_soldiers_white[xx][yy]==0&&attack_space_of_cannons_white[xx][yy]==0&&(n-1-xx)>2)
+		black_y_sum+=(n-1-xx)*(n-1-xx);
 		if(move==1){
-			temp_value= attack_space_of_soldiers_black[xx][yy] + attack_space_of_cannons_black[xx][yy] - attack_space_of_soldiers_white[xx][yy];
+			temp_value= attack_space_of_soldiers_black[xx][yy]  - attack_space_of_soldiers_white[xx][yy];
 			if(temp_value<0){
+				//value_of_all_soldiers_black-=attack_space_of_soldiers_black[xx][yy]*60;
 				value_of_all_soldiers_black+=temp_value*60;
 			}
+			if(attack_space_of_soldiers_white[xx][yy]>0&&  attack_space_of_cannons_black[xx][yy]>0){
+				value_of_all_soldiers_black+=40;
+			}
+			// else{
+			// 	if(attack_space_of_soldiers_white[xx][yy]>0)
+			// 		value_of_all_soldiers_black-=80;
+			// }
 		}
+
 		if(attack_space_of_cannons_white[xx][yy]>0){
-			if(cannon_pos_black[xx][yy]>0&&move==1)
-				value_of_all_cannons_black-=25;
+			// if(cannon_pos_black[xx][yy]>0&&move==1)
+			// 	value_of_all_cannons_black-=25;
 			num_opp_attacked_by_whiteCannons++;
 		}
 	}
 	for(auto i=space_of_soldiers_white.begin();i!=space_of_soldiers_white.end();i++){
 		position=*i;
 		xx=position/m;yy=position%m;
-		white_y_sum+=xx;
+		if(attack_space_of_soldiers_black[xx][yy]==0&&attack_space_of_cannons_black[xx][yy]==0&&xx>2)
+		white_y_sum+=xx*xx;
 		if(move==0){
-			temp_value= attack_space_of_soldiers_white[xx][yy] + attack_space_of_cannons_white[xx][yy] - attack_space_of_soldiers_black[xx][yy];
+			temp_value= attack_space_of_soldiers_white[xx][yy] - attack_space_of_soldiers_black[xx][yy];
 			if(temp_value<0){
+				//value_of_all_soldiers_white-=attack_space_of_soldiers_white[xx][yy]*60;
 				value_of_all_soldiers_white+=temp_value*60;
 			}
+			if(attack_space_of_cannons_white[xx][yy] >0&& attack_space_of_soldiers_black[xx][yy]>0){
+				value_of_all_soldiers_white+=40;
+			}
+			// else{
+			// 	if(attack_space_of_soldiers_black[xx][yy]>0)
+			// 		value_of_all_soldiers_white-=80;
+			// }
 		}
 		if(attack_space_of_cannons_black[xx][yy]>0){
-			if(cannon_pos_white[xx][yy]>0&&move==0)
-				value_of_all_cannons_white-=25;
+			// if(cannon_pos_white[xx][yy]>0&&move==0)
+			// 	value_of_all_cannons_white-=25;
 			num_opp_attacked_by_blackCannons++;
 		}
 	}
@@ -811,10 +887,10 @@ float Game::eval_function(int move){
 			position=i;
 			xx=position/m;yy=position%m;
 			if(attack_space_of_cannons_black[xx][yy]!=0){
-				num_attack_on_white_townhall+=2;
+				num_attack_on_white_townhall+=3*attack_space_of_cannons_black[xx][yy];
 			}
 			if(attack_space_of_soldiers_black[xx][yy]!=0){
-				num_attack_on_white_townhall++;
+				num_attack_on_white_townhall+=attack_space_of_soldiers_black[xx][yy];
 			}
 			//num_white_townhalls++;
 		}
@@ -824,10 +900,10 @@ float Game::eval_function(int move){
 			position=(n-1)*m+i;
 			xx=position/m;yy=position%m;
 			if(attack_space_of_cannons_white[xx][yy]!=0){
-				num_attack_on_black_townhall+=2;
+				num_attack_on_black_townhall+=3*attack_space_of_cannons_white[xx][yy];
 			}
 			if(attack_space_of_soldiers_white[xx][yy]!=0){
-				num_attack_on_black_townhall++;
+				num_attack_on_black_townhall+=attack_space_of_soldiers_white[xx][yy];
 			}
 			//num_black_townhalls++;
 		}
@@ -835,21 +911,27 @@ float Game::eval_function(int move){
 
 	value+=value_of_all_soldiers_black;
 	value-=value_of_all_soldiers_white;
+	//cerr<<value<<" ";
 
-	value-=num_attack_on_black_townhall*20.0;
-	value+=num_attack_on_white_townhall*20.0;
+	value-=num_attack_on_black_townhall*10.0;
+	value+=num_attack_on_white_townhall*10.0;
+	//cerr<<value<<" ";
 
 	value+=value_of_all_cannons_black;
 	value-=value_of_all_cannons_white;
+	//cerr<<value<<" ";
 
 	value+=num_black_soldiers*50.0;
 	value-=num_white_soldiers*50.0;
+	//cerr<<value<<" ";
 
 	value+=num_opp_attacked_by_blackCannons*22;
 	value-=num_opp_attacked_by_whiteCannons*22;
+	//cerr<<value<<" ";
 
 	value+=black_y_sum*0.7f;
 	value-=white_y_sum*0.7f;
+	//cerr<<value<<" ";
 
 	return value;
 }

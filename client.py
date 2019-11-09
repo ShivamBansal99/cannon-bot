@@ -8,7 +8,7 @@ from game import Game
 class Client(Communicator):
 	def __init__(self):
 		self.GAME_TIMER = 100000 # in Milli Seconds
-		self.NETWORK_TIMER = 60
+		self.NETWORK_TIMER = 150
 		super(Client,self).__init__()
 		pass
 
