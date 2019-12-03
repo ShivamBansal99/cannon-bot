@@ -16,12 +16,12 @@ public:
   unordered_set<int> possible_moves_black;
   unordered_set<int> space_of_soldiers_white;
   unordered_set<int> space_of_soldiers_black;
-  vector<vector<int>> attack_space_of_cannons_white;
-  vector<vector<int>> attack_space_of_cannons_black;
-  vector<vector<int>> attack_space_of_soldiers_white;
-  vector<vector<int>> attack_space_of_soldiers_black;
-  vector<vector<int>> cannon_pos_white;
-  vector<vector<int>> cannon_pos_black;
+  vector<vector<int> > attack_space_of_cannons_white;
+  vector<vector<int> > attack_space_of_cannons_black;
+  vector<vector<int> > attack_space_of_soldiers_white;
+  vector<vector<int> > attack_space_of_soldiers_black;
+  // vector<vector<int> > cannon_pos_white;
+  // vector<vector<int> > cannon_pos_black;
   vector<string> the_board;
   bool check_ne(int x1,int y1,char player,vector<string> &current_board,bool opp);
   int encode_move(int type,int xs,int ys,int x,int y);

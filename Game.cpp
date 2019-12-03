@@ -142,28 +142,28 @@ void Game::attack_move2(bool del,int color1,int color2,int x,int y){
 	}
 	return;
 }
-void Game::attack_move3(bool del,int color1,int color2,int x,int y){
-	if(color1==1){
-		x=n-1-x;y=m-1-y;
-	}
-	if(color2==0){
-		if(del){
-			cannon_pos_black[x][y]--;
-		}
-		else{
-			cannon_pos_black[x][y]++;
-		}
-	}
-	else{
-		if(del){
-			cannon_pos_white[x][y]--;
-		}
-		else{
-			cannon_pos_white[x][y]++;
-		}
-	}
-	return;
-}
+// void Game::attack_move3(bool del,int color1,int color2,int x,int y){
+// 	if(color1==1){
+// 		x=n-1-x;y=m-1-y;
+// 	}
+// 	if(color2==0){
+// 		if(del){
+// 			cannon_pos_black[x][y]--;
+// 		}
+// 		else{
+// 			cannon_pos_black[x][y]++;
+// 		}
+// 	}
+// 	else{
+// 		if(del){
+// 			cannon_pos_white[x][y]--;
+// 		}
+// 		else{
+// 			cannon_pos_white[x][y]++;
+// 		}
+// 	}
+// 	return;
+// }
 void  Game::insert_move(int color1,int color2,int type,int xs,int ys,int x,int y){
 	int mov;
 	color1==0?mov=encode_move(type,xs,ys,x,y):mov=encode_move(type,n-1-xs,m-1-ys,n-1-x,m-1-y);
@@ -326,17 +326,17 @@ void  Game::letsdel(int init_pos,char player,bool del){
 				{
 					attack_move2(del,color,color,xx+3*i,yy+3*j);
 					if(!(current_board[xx+3*i][yy+3*j]==player||current_board[xx+3*i][yy+3*j]==townhall)){
-						if(current_board[xx+3*i][yy+3*j]==opp_player||current_board[xx+3*i][yy+3*j]==opp_townhall){
-							attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx-i,yy-j);attack_move3(del,color,color,xx+i,yy+j);
-						}
+						// if(current_board[xx+3*i][yy+3*j]==opp_player||current_board[xx+3*i][yy+3*j]==opp_townhall){
+						// 	attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx-i,yy-j);attack_move3(del,color,color,xx+i,yy+j);
+						// }
 						del?delete_move(color,color,1,xx,yy,xx+3*i,yy+3*j):insert_move(color,color,1,xx,yy,xx+3*i,yy+3*j);
 					}
 					if((xx+4*i)<=(n-1)&&(xx+4*i)>=0&&(yy+4*j)<=(m-1)&&(yy+4*j)>=0){
 						attack_move2(del,color,color,xx+4*i,yy+4*j);
 						if(!(current_board[xx+4*i][yy+4*j]==player||current_board[xx+4*i][yy+4*j]==townhall)){
-							if(current_board[xx+4*i][yy+4*j]==opp_player||current_board[xx+4*i][yy+4*j]==opp_townhall){
-								attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx-i,yy-j);attack_move3(del,color,color,xx+i,yy+j);
-							}
+							// if(current_board[xx+4*i][yy+4*j]==opp_player||current_board[xx+4*i][yy+4*j]==opp_townhall){
+							// 	attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx-i,yy-j);attack_move3(del,color,color,xx+i,yy+j);
+							// }
 							del?delete_move(color,color,1,xx,yy,xx+4*i,yy+4*j):insert_move(color,color,1,xx,yy,xx+4*i,yy+4*j);
 						}
 					}
@@ -434,36 +434,36 @@ void  Game::letsdel(int init_pos,char player,bool del){
 						attack_move2(del,color,color,xx+4*i,yy+4*j);
 						if(!(current_board[xx+4*i][yy+4*j]==player||current_board[xx+4*i][yy+4*j]==townhall)){
 							del?delete_move(color,color,1,xx+i,yy+j,xx+4*i,yy+4*j):insert_move(color,color,1,xx+i,yy+j,xx+4*i,yy+4*j);
-							if(current_board[xx+4*i][yy+4*j]==opp_player||current_board[xx+4*i][yy+4*j]==opp_townhall){
-								attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx+2*i,yy+2*j);attack_move3(del,color,color,xx+i,yy+j);
-							}
+							// if(current_board[xx+4*i][yy+4*j]==opp_player||current_board[xx+4*i][yy+4*j]==opp_townhall){
+							// 	attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx+2*i,yy+2*j);attack_move3(del,color,color,xx+i,yy+j);
+							// }
 						}
 					}
 					if((xx+5*i)>=0&&(yy+5*j)>=0&&(xx+5*i)<=(n-1)&&(yy+5*j)<=(m-1)&&current_board[xx+3*i][yy+3*j]=='-'){
 						attack_move2(del,color,color,xx+5*i,yy+5*j);
 						if(!(current_board[xx+5*i][yy+5*j]==player||current_board[xx+5*i][yy+5*j]==townhall)){
 							del?delete_move(color,color,1,xx+i,yy+j,xx+5*i,yy+5*j):insert_move(color,color,1,xx+i,yy+j,xx+5*i,yy+5*j);
-							if(current_board[xx+5*i][yy+5*j]==opp_player||current_board[xx+5*i][yy+5*j]==opp_townhall){
-								attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx+2*i,yy+2*j);attack_move3(del,color,color,xx+i,yy+j);
-							}
+							// if(current_board[xx+5*i][yy+5*j]==opp_player||current_board[xx+5*i][yy+5*j]==opp_townhall){
+							// 	attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx+2*i,yy+2*j);attack_move3(del,color,color,xx+i,yy+j);
+							// }
 						}
 					}
 					if((xx-2*i)>=0&&(yy-2*j)>=0&&(xx-2*i)<=(n-1)&&(yy-2*j)<=(m-1)&&current_board[xx-i][yy-j]=='-'){
 						attack_move2(del,color,color,xx-2*i,yy-2*j);
 						if(!(current_board[xx-2*i][yy-2*j]==player||current_board[xx-2*i][yy-2*j]==townhall)){
 							del?delete_move(color,color,1,xx+i,yy+j,xx-2*i,yy-2*j):insert_move(color,color,1,xx+i,yy+j,xx-2*i,yy-2*j);
-							if(current_board[xx-2*i][yy-2*j]==opp_player||current_board[xx-2*i][yy-2*j]==opp_townhall){
-								attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx+2*i,yy+2*j);attack_move3(del,color,color,xx+i,yy+j);
-							}
+							// if(current_board[xx-2*i][yy-2*j]==opp_player||current_board[xx-2*i][yy-2*j]==opp_townhall){
+							// 	attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx+2*i,yy+2*j);attack_move3(del,color,color,xx+i,yy+j);
+							// }
 						}
 					}
 					if((xx-3*i)>=0&&(yy-3*j)>=0&&(xx-3*i)<=(n-1)&&(yy-3*j)<=(m-1)&&current_board[xx-i][yy-j]=='-'){
 						attack_move2(del,color,color,xx-3*i,yy-3*j);
 						if(!(current_board[xx-3*i][yy-3*j]==player||current_board[xx-3*i][yy-3*j]==townhall)){
 							del?delete_move(color,color,1,xx+i,yy+j,xx-3*i,yy-3*j):insert_move(color,color,1,xx+i,yy+j,xx-3*i,yy-3*j);
-							if(current_board[xx-3*i][yy-3*j]==opp_player||current_board[xx-3*i][yy-3*j]==opp_townhall){
-								attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx+2*i,yy+2*j);attack_move3(del,color,color,xx+i,yy+j);
-							}
+							// if(current_board[xx-3*i][yy-3*j]==opp_player||current_board[xx-3*i][yy-3*j]==opp_townhall){
+							// 	attack_move3(del,color,color,xx,yy);attack_move3(del,color,color,xx+2*i,yy+2*j);attack_move3(del,color,color,xx+i,yy+j);
+							// }
 						}
 					}
 					if((xx-i)>=0&&(yy-j)>=0&&(xx-i)<=(n-1)&&(yy-j)<=(m-1)&&current_board[xx-i][yy-j]=='-'){
@@ -512,20 +512,20 @@ void  Game::letsdel(int init_pos,char player,bool del){
 					attack_move2(!del,color,color,xx-i,yy-j);
 					if(!(current_board[xx-i][yy-j]==player||current_board[xx-i][yy-j]==townhall)){
 						del?insert_move(color,color,1,xx+2*i,yy+2*j,xx-i,yy-j):delete_move(color,color,1,xx+2*i,yy+2*j,xx-i,yy-j);
-						if(current_board[xx-i][yy-j]==opp_player||current_board[xx-i][yy-j]==opp_townhall){
-							// cout<<xx<<" "<<yy<<"p\n";
-							attack_move3(!del,color,color,xx+3*i,yy+3*j);attack_move3(!del,color,color,xx+2*i,yy+2*j);attack_move3(!del,color,color,xx+i,yy+j);
-						}
+						// if(current_board[xx-i][yy-j]==opp_player||current_board[xx-i][yy-j]==opp_townhall){
+						// 	// cout<<xx<<" "<<yy<<"p\n";
+						// 	attack_move3(!del,color,color,xx+3*i,yy+3*j);attack_move3(!del,color,color,xx+2*i,yy+2*j);attack_move3(!del,color,color,xx+i,yy+j);
+						// }
 					}
 				}
 				if((xx-2*i)<=(n-1)&&(yy-2*j)<=(m-1)&&(xx-2*i)>=0&&(yy-2*j)>=0){
 					attack_move2(!del,color,color,xx-2*i,yy-2*j);
 					if(!(current_board[xx-2*i][yy-2*j]==player||current_board[xx-2*i][yy-2*j]==townhall)){
 						del?insert_move(color,color,1,xx+2*i,yy+2*j,xx-2*i,yy-2*j):delete_move(color,color,1,xx+2*i,yy+2*j,xx-2*i,yy-2*j);
-						if(current_board[xx-2*i][yy-2*j]==opp_player||current_board[xx-2*i][yy-2*j]==opp_townhall){
-							// cout<<xx<<" "<<yy<<"q\n";
-							attack_move3(!del,color,color,xx+3*i,yy+3*j);attack_move3(!del,color,color,xx+2*i,yy+2*j);attack_move3(!del,color,color,xx+i,yy+j);
-						}
+						// if(current_board[xx-2*i][yy-2*j]==opp_player||current_board[xx-2*i][yy-2*j]==opp_townhall){
+						// 	// cout<<xx<<" "<<yy<<"q\n";
+						// 	attack_move3(!del,color,color,xx+3*i,yy+3*j);attack_move3(!del,color,color,xx+2*i,yy+2*j);attack_move3(!del,color,color,xx+i,yy+j);
+						// }
 					}
 				}
 			}
@@ -553,18 +553,18 @@ void  Game::letsdel(int init_pos,char player,bool del){
 					attack_move2(!del,color,1-color,xx-i,yy-j);
 					if(!(current_board[xx-i][yy-j]==opp_player||current_board[xx-i][yy-j]==opp_townhall)){
 						del?insert_move(color,1-color,1,xx+2*i,yy+2*j,xx-i,yy-j):delete_move(color,1-color,1,xx+2*i,yy+2*j,xx-i,yy-j);
-						if(current_board[xx-i][yy-j]==player||current_board[xx-i][yy-j]==townhall){
-							attack_move3(!del,color,1-color,xx+3*i,yy+3*j);attack_move3(!del,color,1-color,xx+2*i,yy+2*j);attack_move3(!del,color,1-color,xx+i,yy+j);
-						}
+						// if(current_board[xx-i][yy-j]==player||current_board[xx-i][yy-j]==townhall){
+						// 	attack_move3(!del,color,1-color,xx+3*i,yy+3*j);attack_move3(!del,color,1-color,xx+2*i,yy+2*j);attack_move3(!del,color,1-color,xx+i,yy+j);
+						// }
 					}
 				}
 				if((xx-2*i)<=(n-1)&&(yy-2*j)<=(m-1)&&(xx-2*i)>=0&&(yy-2*j)>=0){
 					attack_move2(!del,color,1-color,xx-2*i,yy-2*j);
 					if(!(current_board[xx-2*i][yy-2*j]==opp_player||current_board[xx-2*i][yy-2*j]==opp_townhall)){
 						del?insert_move(color,1-color,1,xx+2*i,yy+2*j,xx-2*i,yy-2*j):delete_move(color,1-color,1,xx+2*i,yy+2*j,xx-2*i,yy-2*j);
-						if(current_board[xx-2*i][yy-2*j]==player||current_board[xx-2*i][yy-2*j]==townhall){
-							attack_move3(!del,color,1-color,xx+3*i,yy+3*j);attack_move3(!del,color,1-color,xx+2*i,yy+2*j);attack_move3(!del,color,1-color,xx+i,yy+j);
-						}
+						// if(current_board[xx-2*i][yy-2*j]==player||current_board[xx-2*i][yy-2*j]==townhall){
+						// 	attack_move3(!del,color,1-color,xx+3*i,yy+3*j);attack_move3(!del,color,1-color,xx+2*i,yy+2*j);attack_move3(!del,color,1-color,xx+i,yy+j);
+						// }
 					}
 				}
 			}
@@ -597,23 +597,23 @@ void  Game::letsdel(int init_pos,char player,bool del){
 		current_board[xx][yy]=tempp;
 	}
 	////////////Player at the fire of nearby cannons
-	for(int i=-1;i<2;i++){
-		for(int j=-1;j<2;j++){
-			if(i==0&&j==0){
-				continue;
-			}
-			if((xx+4*i)<=(n-1)&&(xx+4*i)>=0&&(yy+4*j)<=(m-1)&&(yy+4*j)>=0&&current_board[xx+4*i][yy+4*j]==opp_player&&
-				current_board[xx+3*i][yy+3*j]==opp_player&&current_board[xx+2*i][yy+2*j]==opp_player&&current_board[xx+i][yy+j]=='-')
-			{
-				attack_move3(del,color,1-color,xx+3*i,yy+3*j);attack_move3(del,color,1-color,xx+2*i,yy+2*j);attack_move3(del,color,1-color,xx+4*i,yy+4*j);
-			}
-			if((xx+5*i)<=(n-1)&&(xx+5*i)>=0&&(yy+5*j)<=(m-1)&&(yy+5*j)>=0&&current_board[xx+5*i][yy+5*j]==opp_player&&
-				current_board[xx+4*i][yy+4*j]==opp_player&&current_board[xx+3*i][yy+3*j]==opp_player&&current_board[xx+2*i][yy+2*j]=='-')
-			{
-				attack_move3(del,color,1-color,xx+3*i,yy+3*j);attack_move3(del,color,1-color,xx+4*i,yy+4*j);attack_move3(del,color,1-color,xx+5*i,yy+5*j);
-			}
-		}
-	}
+	// for(int i=-1;i<2;i++){
+	// 	for(int j=-1;j<2;j++){
+	// 		if(i==0&&j==0){
+	// 			continue;
+	// 		}
+	// 		if((xx+4*i)<=(n-1)&&(xx+4*i)>=0&&(yy+4*j)<=(m-1)&&(yy+4*j)>=0&&current_board[xx+4*i][yy+4*j]==opp_player&&
+	// 			current_board[xx+3*i][yy+3*j]==opp_player&&current_board[xx+2*i][yy+2*j]==opp_player&&current_board[xx+i][yy+j]=='-')
+	// 		{
+	// 			attack_move3(del,color,1-color,xx+3*i,yy+3*j);attack_move3(del,color,1-color,xx+2*i,yy+2*j);attack_move3(del,color,1-color,xx+4*i,yy+4*j);
+	// 		}
+	// 		if((xx+5*i)<=(n-1)&&(xx+5*i)>=0&&(yy+5*j)<=(m-1)&&(yy+5*j)>=0&&current_board[xx+5*i][yy+5*j]==opp_player&&
+	// 			current_board[xx+4*i][yy+4*j]==opp_player&&current_board[xx+3*i][yy+3*j]==opp_player&&current_board[xx+2*i][yy+2*j]=='-')
+	// 		{
+	// 			attack_move3(del,color,1-color,xx+3*i,yy+3*j);attack_move3(del,color,1-color,xx+4*i,yy+4*j);attack_move3(del,color,1-color,xx+5*i,yy+5*j);
+	// 		}
+	// 	}
+	// }
 	return;
 }
 
@@ -629,8 +629,8 @@ void  Game::load_new_board(){
 		vector<int> a2;
 		vector<int> a3;
 		vector<int> a4;
-		vector<int> a5;
-		vector<int> a6;
+		// vector<int> a5;
+		// vector<int> a6;
 		num_white_townhalls=0;
 		num_black_townhalls=0;
 		for(int j=0;j<m;j++){
@@ -639,15 +639,15 @@ void  Game::load_new_board(){
 			a2.push_back(0);
 			a3.push_back(0);
 			a4.push_back(0);
-			a5.push_back(0);
-			a6.push_back(0);
+			// a5.push_back(0);
+			// a6.push_back(0);
 		}
 		attack_space_of_soldiers_black.push_back(a1);
 		attack_space_of_soldiers_white.push_back(a2);
 		attack_space_of_cannons_black.push_back(a3);
 		attack_space_of_cannons_white.push_back(a4);
-		cannon_pos_black.push_back(a5);
-		cannon_pos_white.push_back(a6);
+		// cannon_pos_black.push_back(a5);
+		// cannon_pos_white.push_back(a6);
 		the_board.push_back(row);
 	}
 	for(int i=1;i<m;i=i+2){

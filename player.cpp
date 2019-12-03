@@ -123,7 +123,7 @@ void play(Game &game, int time_given, int start_time){
     //   depp=3;
     // }
     unordered_set<int> validMoves = game.validMoves(player);
-    depp = (12.57f/log10((float)validMoves.size()* (float)game.validMoves(1-player).size()));
+    depp = (12.57f/log10(((float)validMoves.size()* (float)game.validMoves(1-player).size())+2));
     ////////////////////////////////////////////
     float bestValue=INT_MIN;
     int best_move = 0;
@@ -149,7 +149,7 @@ void play(Game &game, int time_given, int start_time){
       quis_depth = 0;
       max_queiscent = 0;
     }
-    cerr<<depp<<endl;
+    //cerr<<depp<<endl;
     for(auto i = validMoves.begin();i!=validMoves.end();i++){
       game.move(*i);
       total_queiscent = 0;
